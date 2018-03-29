@@ -1,11 +1,15 @@
-const fs = require('fs');
-const constants = require('./constants');
-
-const obtenerItemAleatoriamente = array => {
-  const longitud = array.length;
+const obtenerItemAleatoriamente = arreglo => {
+  const longitud = arreglo.length;
   const indice = Math.floor(Math.random() * longitud);
-  return array[indice];
+  return arreglo[indice];
 };
+
+const crearNumeroAleatorio = (minimo, maximo) => {
+  const numeroAleatorio = Math.round(Math.random() * (maximo - minimo));
+  return numeroAleatorio + minimo;
+};
+
+const crearArreglo = longitud => Array.from(Array(longitud).keys());
 
 const obtenerBebida = platos => {
   const bebidas = platos.filter(item => item.categoria === 'Bebidas');
@@ -18,13 +22,12 @@ const obtenerPlatoAdicional = platos => {
 };
 
 const obtenerPlatoFuerte = platos => {
-  const platosFuertes = platos.filter(
-    item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas',
-  );
+  const platosFuertes = platos.filter(item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas');
   return obtenerItemAleatoriamente(platosFuertes);
 };
 
-const agregarPlato = (listadoPlatos, plato, currentYear) => {
+const agregarPlatoAOrden = (listadoPlatos, plato, currentYear) => {
+  if (plato === undefined) return;
   if (listadoPlatos[plato.id] === undefined) {
     listadoPlatos[plato.id] = {
       nombre: plato.nombre,
@@ -37,16 +40,16 @@ const agregarPlato = (listadoPlatos, plato, currentYear) => {
 };
 
 module.exports = {
+
+  crearArreglo,
+
+  crearNumeroAleatorio,
+
   obtenerItemAleatoriamente,
 
   esFinDeSemana: fecha => {
     const dia = fecha.getDay();
     return dia === 6 || dia === 0;
-  },
-
-  crearNumeroAleatorio: (minimo, maximo) => {
-    const numeroAleatorio = Math.round(Math.random() * (maximo - minimo));
-    return numeroAleatorio + minimo;
   },
 
   formatearFecha: fecha => `${fecha.getDate()}-${fecha.getMonth() + 1}-${fecha.getFullYear()}`,
@@ -56,24 +59,19 @@ module.exports = {
     return new Date(fecha.setDate(dia));
   },
 
-  crearHora: () => {
-    const { HORAS, MINUTOS } = constants;
+  crearHora: (Constantes) => {
+    const { HORAS, MINUTOS } = Constantes;
     const formatearHora = numero => (numero < 10 ? `0${numero}` : numero);
-    return `${formatearHora(obtenerItemAleatoriamente(HORAS))}:${formatearHora(
-      obtenerItemAleatoriamente(MINUTOS),
-    )}`;
+    return `${formatearHora(obtenerItemAleatoriamente(HORAS))}:${formatearHora(obtenerItemAleatoriamente(MINUTOS))}`;
   },
 
-  crearNumeroDeMesa: () => {
-    return obtenerItemAleatoriamente(constants.MESAS);
-  },
+  crearNumeroDeMesa: Constantes => obtenerItemAleatoriamente(Constantes.MESAS),
 
-  crearNumeroDePersonas: () => {
-    return obtenerItemAleatoriamente(constants.PERSONAS);
-  },
+  crearNumeroDePersonas: Constantes => obtenerItemAleatoriamente(Constantes.NUMERO_PERSONAS),
 
-  crearTipoCliente: numeroDePersonas => {
-    const { TIPOS_DE_CLIENTE } = constants;
+  crearTipoClienteNormal: (numeroDePersonas, Constantes) => {
+
+    const { TIPOS_DE_CLIENTE } = Constantes;
 
     if (numeroDePersonas === 1) {
       return TIPOS_DE_CLIENTE.INDIVIDUAL[0];
@@ -84,32 +82,39 @@ module.exports = {
     return obtenerItemAleatoriamente(TIPOS_DE_CLIENTE.GRUPAL);
   },
 
-  obtenerListadoDePlatos: (numeroDePersonas, currentYear) => {
-    const { PLATOS } = constants;
+  crearTipoClienteDomicilios: (numeroPlatos, Constantes) => {
+
+    const { TIPOS_DE_CLIENTE } = Constantes;
+
+    if (numeroPlatos < 4) {
+      return TIPOS_DE_CLIENTE.INDIVIDUAL[0];
+    }
+
+    return obtenerItemAleatoriamente(['EMPRESA', 'GRUPO']);
+  },
+
+  obtenerListadoDePlatos: (numeroDePersonas, currentYear, Constantes) => {
+
+    const { PLATOS } = Constantes;
     const listadoPlatos = {};
 
-    Array.from(Array(numeroDePersonas).keys()).map(() => {
-      const platoFuerte = obtenerPlatoFuerte(PLATOS);
-      const bebida = obtenerBebida(PLATOS);
-      const platoAdicional =
-        Math.round(Math.random() * 1) === 1 ? obtenerPlatoAdicional(PLATOS) : undefined;
-
-      agregarPlato(listadoPlatos, platoFuerte, currentYear);
-      agregarPlato(listadoPlatos, bebida, currentYear);
-      if (platoAdicional) agregarPlato(listadoPlatos, platoAdicional, currentYear);
-    });
+    crearArreglo(numeroDePersonas)
+      .map(() => {
+        const platoFuerte = obtenerPlatoFuerte(PLATOS);
+        const bebida = obtenerBebida(PLATOS);
+        const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(PLATOS) : undefined;
+        agregarPlatoAOrden(listadoPlatos, platoFuerte, currentYear);
+        agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
+        agregarPlatoAOrden(listadoPlatos, platoAdicional, currentYear);
+      });
 
     return Object.values(listadoPlatos);
   },
 
-  crearArchivoExcel: data => {
-    const transform = array => array.map(item => `${Object.values(item).join(';')}`).join('\n');
-    fs.writeFile('./output/Fuente de datos.csv', transform(data), err => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('The file was saved!');
-      }
-    });
+  obtenerCliente: (tipo, Constantes) => {
+    const { CLIENTES } = Constantes;
+    const clientes = CLIENTES.filter(item => item.tipo === tipo);
+    return obtenerItemAleatoriamente(clientes);
   },
+
 };
