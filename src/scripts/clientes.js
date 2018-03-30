@@ -6,6 +6,8 @@ module.exports = {
 
   ejecutar: () => {
 
+    console.log('Creando archivo con el listado de clientes...', new Date());
+
     const archivoExcelClientes = new xl.Workbook();
     const hojaDeExcelClientes = archivoExcelClientes.addWorksheet('Clientes');
 
@@ -23,7 +25,7 @@ module.exports = {
       if (err) {
         console.error(err);
       } else {
-        console.log('Success...');
+        console.log('Archivo creado correctamente', new Date());
       }
     });
 

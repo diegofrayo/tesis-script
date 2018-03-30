@@ -102,11 +102,12 @@ module.exports = {
       .map(() => {
         const platoFuerte = obtenerPlatoFuerte(PLATOS);
         const bebida = obtenerBebida(PLATOS);
-        const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(PLATOS) : undefined;
         agregarPlatoAOrden(listadoPlatos, platoFuerte, currentYear);
         agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
-        agregarPlatoAOrden(listadoPlatos, platoAdicional, currentYear);
       });
+
+    const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(PLATOS) : undefined;
+    agregarPlatoAOrden(listadoPlatos, platoAdicional, currentYear);
 
     return Object.values(listadoPlatos);
   },

@@ -10,8 +10,8 @@ const guardarArchivo = (archivoExcel, nombreArchivo) => {
         console.error(err);
         reject(err);
       } else {
-        console.log(`Success | ${nombreArchivo} | ${new Date()}`);
-        resolve(`Success | ${nombreArchivo} | ${new Date()}`);
+        console.log(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
+        resolve(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
       }
     });
   });
@@ -20,6 +20,8 @@ const guardarArchivo = (archivoExcel, nombreArchivo) => {
 module.exports = {
 
   ejecutar: configuracion => {
+
+    console.log(`Creando archivo [${configuracion.directorioArchivos}]...`, new Date());
 
     let ordenId = 1000;
 
@@ -135,7 +137,7 @@ module.exports = {
 
         Utils
           .batchPromises(1, fechasAgrupadasPorMes, true, generarDatos)
-          .then(() => console.log(`Numero de registros: ${ordenId - 1000}`))
+          .then(() => console.log(`Numero total de registros: ${ordenId - 1000}`))
           .catch(console.error);
     });
 
