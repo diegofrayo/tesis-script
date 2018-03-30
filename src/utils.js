@@ -59,7 +59,7 @@ module.exports = {
     return new Date(fecha.setDate(dia));
   },
 
-  crearHora: (Constantes) => {
+  crearHora: Constantes => {
     const { HORAS, MINUTOS } = Constantes;
     const formatearHora = numero => (numero < 10 ? `0${numero}` : numero);
     return `${formatearHora(obtenerItemAleatoriamente(HORAS))}:${formatearHora(obtenerItemAleatoriamente(MINUTOS))}`;

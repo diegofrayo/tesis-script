@@ -26,7 +26,10 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development node src/index.js",
-    "lint": "esw -w -c .eslintrc src/*.js"
+    "start-domicilios": "cross-env NODE_ENV=development node src/index.js --area=domicilios",
+    "start-normal": "cross-env NODE_ENV=development node src/index.js --area=normal",
+    "start-clientes": "cross-env NODE_ENV=development node src/index.js --area=clientes",
+    "lint": "esw -w -c .eslintrc src/**/*.js"
   },
   "devDependencies": {
     "cross-env": "^5.1.4",

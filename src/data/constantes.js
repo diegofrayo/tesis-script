@@ -1,6 +1,6 @@
 const Clientes = require('./clientes');
 const Platos = require('./platos');
-const Utils = require('./utils');
+const Utils = require('./../utils');
 
 const COLUMNAS = [
   'ORDEN',
