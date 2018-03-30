@@ -41,7 +41,7 @@ module.exports = {
 
   MESAS: Utils.crearArreglo(40).map(current => current + 1),
 
-  NUMERO_PERSONAS: Utils.crearArreglo(10).map(current => current + 1),
+  NUMERO_PERSONAS: Utils.crearArreglo(15).map(current => current + 1),
 
   TIPOS_DE_CLIENTE: {
     INDIVIDUAL: ['INDIVIDUO'],

@@ -117,4 +117,23 @@ module.exports = {
     return obtenerItemAleatoriamente(clientes);
   },
 
+  /* eslint-disable */
+  batchPromises: (batchSize, array, getWholeArray, callback) => {
+    batchSize = batchSize > array.length ? array.length : batchSize;
+    return array
+      .map((_, i) => i % batchSize ? '' : array.slice(i, i + batchSize))
+      .filter(group => group !== '')
+      .map((group, index) => {
+        return res => {
+          return Promise.all(
+            group
+              .map(getWholeArray ? callback(array, index * batchSize) : callback))
+              .then(r => res.concat(r)
+          );
+        };
+      })
+      .reduce((chain, work) => chain.then(work), Promise.resolve([]));
+  }
+  /* eslint-enable */
+
 };

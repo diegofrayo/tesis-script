@@ -3,6 +3,20 @@ const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4n
 const Constantes = require('./../data/constantes');
 const Utils = require('./../utils');
 
+const guardarArchivo = (archivoExcel, nombreArchivo) => {
+  return new Promise((resolve, reject) => {
+    archivoExcel.write(nombreArchivo, err => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        console.log(`Success | ${nombreArchivo} | ${new Date()}`);
+        resolve(`Success | ${nombreArchivo} | ${new Date()}`);
+      }
+    });
+  });
+};
+
 module.exports = {
 
   ejecutar: configuracion => {
@@ -13,23 +27,24 @@ module.exports = {
       .YEARS
       .forEach(year => {
 
-        Object
-          .values(
-            Utils
-              .crearArreglo(year === new Date().getFullYear() ? 120 : 365)
-              .map(indice => Utils.crearFecha(year, indice + 1))
-              .reduce((acum, fecha) => {
-                const mes = fecha.getMonth();
-                let fechas = acum[mes];
-                if (fechas === undefined) {
-                  acum[mes] = [];
-                  fechas = acum[mes];
-                }
-                fechas.push(fecha);
-                return acum;
-              }, {})
-          )
-          .forEach((fechas, mesesIndice) => {
+        const fechasAgrupadasPorMes = Object.values(
+          Utils
+            .crearArreglo(year === new Date().getFullYear() ? 120 : 365)
+            .map(indice => Utils.crearFecha(year, indice + 1))
+            .reduce((acum, fecha) => {
+              const mes = fecha.getMonth();
+              let fechas = acum[mes];
+              if (fechas === undefined) {
+                acum[mes] = [];
+                fechas = acum[mes];
+              }
+              fechas.push(fecha);
+              return acum;
+            }, {}),
+        );
+
+        const generarDatos = (arrayEntero, mesesIndice) => {
+          return fechas => {
 
             const archivoExcel = new xl.Workbook();
 
@@ -106,23 +121,24 @@ module.exports = {
                   });
 
                   ordenId += 1;
-              });
+                });
             });
 
-            archivoExcel.write(
-              `./output/${configuracion.directorioArchivos}/${year}/${mesesIndice + 1}. ${Constantes.MESES[mesesIndice]}.xlsx`,
-              (err) => {
-                if (err) {
-                  console.error(err);
-                } else {
-                  console.log('Success...');
-                }
-              },
+            return guardarArchivo(
+              archivoExcel,
+              `./output/${configuracion.directorioArchivos}/${year}/${mesesIndice + 1}. ${
+                Constantes.MESES[mesesIndice]
+              }.xlsx`,
             );
-        });
+          };
+        };
+
+        Utils
+          .batchPromises(1, fechasAgrupadasPorMes, true, generarDatos)
+          .then(() => console.log(`Numero de registros: ${ordenId - 1000}`))
+          .catch(console.error);
     });
 
-    console.log(`Numero de registros: ${ordenId - 1000}`);
   },
 
 };

@@ -25,8 +25,8 @@ switch (argv.area) {
 
   default:
     configuracion = {
-      rangoNumerosDeOrdenNormal: [40, 80],
-      rangoNumerosDeOrdenFinDeSemana: [100, 120],
+      rangoNumerosDeOrdenNormal: [50, 100],
+      rangoNumerosDeOrdenFinDeSemana: [100, 150],
       esDomicilios: false,
       directorioArchivos: 'Ventas En Restaurante',
       columnas: Constantes.COLUMNAS_VENTAS_NORMAL,
