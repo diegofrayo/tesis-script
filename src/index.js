@@ -2,6 +2,9 @@ const { argv } = require('yargs');
 
 const Constantes = require('./data/constantes');
 const ClientesScript = require('./scripts/clientes');
+const ComprasScript = require('./scripts/compras');
+const InsumosScript = require('./scripts/insumos');
+const ProveedoresScript = require('./scripts/proveedores');
 const VentasScript = require('./scripts/ventas');
 
 let configuracion;
@@ -21,6 +24,18 @@ switch (argv.area) {
 
   case 'clientes':
     ClientesScript.ejecutar();
+    break;
+
+  case 'insumos':
+    InsumosScript.ejecutar();
+    break;
+
+  case 'proveedores':
+    ProveedoresScript.ejecutar();
+    break;
+
+  case 'compras':
+    ComprasScript.ejecutar();
     break;
 
   default:

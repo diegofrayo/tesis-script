@@ -1,5 +1,7 @@
 const Clientes = require('./clientes');
+const Insumos = require('./insumos');
 const Platos = require('./platos');
+const Proveedores = require('./proveedores');
 const Utils = require('./../utils');
 
 const COLUMNAS_VENTAS_RESTAURANTE = [
@@ -70,8 +72,27 @@ module.exports = {
     'TIPO',
   ],
 
+  COLUMNAS_INSUMOS: ['IDENTIFICADOR', 'NOMBRE', 'TIPO_UNIDAD'],
+
+  COLUMNAS_PROVEEDORES: ['IDENTIFICADOR', 'NOMBRE', 'DIRECCION', 'TELEFONO'],
+
+  COLUMNAS_COMPRA_INSUMOS: [
+    'NUMERO DE ORDEN',
+    'FECHA',
+    'HORA',
+    'PROVEEDOR',
+    'INSUMO',
+    'PRECIO',
+    'UNIDADES',
+    'VALOR TOTAL ORDEN',
+  ],
+
   CLIENTES: Clientes.generar(),
 
   PLATOS: Platos.generar(),
+
+  INSUMOS: Insumos.generar(),
+
+  PROVEEDORES: Proveedores.generar(),
 
 };

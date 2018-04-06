@@ -55,6 +55,26 @@ const agregarPlatoAOrden = (listadoPlatos, plato, currentYear) => {
   }
 };
 
+const crearTelefonoFijo = () => {
+  return `7${crearNumeroAleatorio(3, 4)}${crearNumeroAleatorio(2, 7)}${crearArreglo(4).map(() => crearNumeroAleatorio(0, 9)).join('')}`;
+};
+
+const crearTelefonoCelular = () => {
+  return `3${crearNumeroAleatorio(0, 2)}${crearNumeroAleatorio(0, 3)}${crearArreglo(7).map(() => crearNumeroAleatorio(0, 9)).join('')}`;
+};
+
+const crearCadenaAleatoria = (longitud = 5) => {
+
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  for (let i = 0; i < longitud; i += 1) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  return text;
+};
+
 module.exports = {
 
   crearArreglo,
@@ -62,6 +82,12 @@ module.exports = {
   crearNumeroAleatorio,
 
   obtenerItemAleatoriamente,
+
+  crearTelefonoFijo,
+
+  crearTelefonoCelular,
+
+  crearCadenaAleatoria,
 
   esFinDeSemana: fecha => {
     const dia = fecha.getDay();
@@ -208,6 +234,111 @@ module.exports = {
   obtenerCliente: (Constantes) => {
     const { CLIENTES } = Constantes;
     return obtenerItemAleatoriamente(CLIENTES);
+  },
+
+  ordenar: (attr = '', order = 'asc') => {
+
+    let greater = 1;
+    let smaller = -1;
+
+    if (order === 'desc') {
+      greater = -1;
+      smaller = 1;
+    }
+
+    const sortFn = (a, b) => {
+
+      let aAttr = a[attr];
+      let bAttr = b[attr];
+
+      if (aAttr === undefined || aAttr === null) {
+        aAttr = '';
+      }
+
+      if (bAttr === undefined || bAttr === null) {
+        bAttr = '';
+      }
+
+      aAttr = aAttr.toLowerCase();
+      bAttr = bAttr.toLowerCase();
+
+      if (aAttr === bAttr) {
+        return 0;
+      } else if (aAttr > bAttr) {
+        return greater;
+      }
+
+      return smaller;
+    };
+
+    return sortFn;
+  },
+
+  crearNombreEmpresa: () => {
+    return `Empresa ${crearCadenaAleatoria(3)}`;
+  },
+
+  crearTelefono: tipoCliente => {
+
+    if (tipoCliente === 'EMPRESA') {
+      return crearTelefonoFijo();
+    }
+
+    return crearNumeroAleatorio(0, 1) ? crearTelefonoCelular() : crearTelefonoFijo();
+  },
+
+  crearDireccion: () => {
+
+    const BARRIOS = [
+      '14 De Octubre',
+      '25 De Mayo',
+      '60 Casas',
+      '7 De Agosto',
+      'Alfonso López',
+      'Almendros',
+      'Arco Iris',
+      'Arenales',
+      'Arrayanes',
+      'Berlín',
+      'La Adiela',
+      'La Alambra',
+      'La Alquería',
+      'La Arboleda',
+      'La Arcadia',
+      'La Aurora',
+      'La Cecilia',
+      'La Clarita',
+      'La Esperanza',
+      'La Fachada',
+      'La Grecia',
+      'La Isabela',
+      'La Mariela',
+      'La Milagrosa',
+      'La Unión',
+      'Las Acacias',
+      'Las Américas',
+      'Las Colinas',
+      'Libertadores',
+      'Limonar',
+      'Lindaraja',
+      'Los Álamos',
+      'Los Naranjos',
+      'Manantiales',
+      'María Cristina',
+      'Mercedes Del Norte',
+    ];
+
+    const carrera = crearNumeroAleatorio(1, 23);
+    let direccion = `Calle ${crearNumeroAleatorio(
+      1,
+      50,
+    )} Cra ${carrera} #${carrera}-${crearNumeroAleatorio(5, 45)}`;
+
+    if (crearNumeroAleatorio(0, 1) === 0) {
+      direccion += ` ${obtenerItemAleatoriamente(BARRIOS)}`;
+    }
+
+    return direccion;
   },
 
   /* eslint-disable */
