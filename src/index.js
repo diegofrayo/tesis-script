@@ -11,7 +11,7 @@ switch (argv.area) {
   case 'domicilios':
     configuracion = {
       rangoNumerosDeOrdenNormal: [5, 10],
-      rangoNumerosDeOrdenFinDeSemana: [15, 20],
+      rangoNumerosDeOrdenFinDeSemana: [10, 15],
       esDomicilios: true,
       directorioArchivos: 'Ventas A Domicilio',
       columnas: Constantes.COLUMNAS_VENTAS_DOMICILIOS,
@@ -25,11 +25,11 @@ switch (argv.area) {
 
   default:
     configuracion = {
-      rangoNumerosDeOrdenNormal: [50, 100],
-      rangoNumerosDeOrdenFinDeSemana: [100, 150],
+      rangoNumerosDeOrdenNormal: [40, 80],
+      rangoNumerosDeOrdenFinDeSemana: [80, 100],
       esDomicilios: false,
       directorioArchivos: 'Ventas En Restaurante',
-      columnas: Constantes.COLUMNAS_VENTAS_NORMAL,
+      columnas: Constantes.COLUMNAS_VENTAS_RESTAURANTE,
     };
     VentasScript.ejecutar(configuracion);
     break;

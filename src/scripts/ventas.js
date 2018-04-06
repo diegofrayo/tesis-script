@@ -24,6 +24,7 @@ module.exports = {
     console.log(`Creando archivo [${configuracion.directorioArchivos}]...`, new Date());
 
     let ordenId = 1000;
+    let numeroTotalPlatos = 0;
 
     Constantes
       .YEARS
@@ -31,7 +32,7 @@ module.exports = {
 
         const fechasAgrupadasPorMes = Object.values(
           Utils
-            .crearArreglo(year === new Date().getFullYear() ? 120 : 365)
+            .crearArreglo(year === new Date().getFullYear() ? 119 : 365)
             .map(indice => Utils.crearFecha(year, indice + 1))
             .reduce((acum, fecha) => {
               const mes = fecha.getMonth();
@@ -68,36 +69,43 @@ module.exports = {
                 numeroOrdenes = Utils.crearNumeroAleatorio(...configuracion.rangoNumerosDeOrdenNormal);
               }
 
+              const rangosHorarios = Utils.calcularRangosHorarios(numeroOrdenes, configuracion.esDomicilios);
+              const rangosTipoCliente = Utils.calcularRangosTipoCliente(numeroOrdenes, configuracion.esDomicilios);
+
               Utils
                 .crearArreglo(numeroOrdenes)
-                .forEach(() => {
+                .forEach(ordenIndice => {
 
-                  const numeroPersonas = Utils.crearNumeroDePersonas(Constantes);
-                  const platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, Constantes);
+                  const rangoHorario = Utils.obtenerRangoHorario(rangosHorarios, ordenIndice);
+                  const hora = Utils.crearHora(rangoHorario.horas, Constantes);
+                  const tipoCliente = Utils.obtenerTipoCliente(rangosTipoCliente, ordenIndice);
+
+                  const numeroPersonas = Utils.obtenerNumeroPersonas(tipoCliente, rangoHorario.franja);
+                  const platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes, configuracion.esDomicilios);
                   const valorTotal = platos.reduce((acum, curr) => {
                     acum += curr.precio * curr.unidades;
                     return acum;
                   }, 0);
 
-                  const orden = {
-                    numero_orden: ordenId,
-                    fecha: Utils.formatearFecha(fecha),
-                    hora: Utils.crearHora(Constantes),
-                    numero_mesa: Utils.crearNumeroDeMesa(Constantes),
-                    tipo_cliente: configuracion.esDomicilios
-                      ? Utils.crearTipoClienteDomicilios(platos.length, Constantes)
-                      : Utils.crearTipoClienteNormal(numeroPersonas, Constantes),
-                    numero_personas: numeroPersonas,
-                  };
+                  let orden;
 
-                  let cliente;
-
-                  if (orden.tipo_cliente === 'EMPRESA') {
-                    cliente = Utils.obtenerCliente(orden.tipo_cliente, Constantes);
-                  } else if (configuracion.esDomicilios || Utils.crearNumeroAleatorio(0, 1) === 1) {
-                    cliente = Utils.obtenerCliente('INDIVIDUO', Constantes);
+                  if (!configuracion.esDomicilios) {
+                    orden = {
+                      numero_orden: ordenId,
+                      fecha: Utils.formatearFecha(fecha),
+                      hora,
+                      tipo_cliente: tipoCliente,
+                      numero_mesa: Utils.crearNumeroDeMesa(Constantes),
+                      numero_personas: numeroPersonas,
+                    };
                   } else {
-                    cliente = { nombre: '-' };
+                    orden = {
+                      numero_orden: ordenId,
+                      fecha: Utils.formatearFecha(fecha),
+                      hora,
+                      tipo_cliente: tipoCliente,
+                      numero_personas: numeroPersonas,
+                    };
                   }
 
                   platos.forEach(plato => {
@@ -108,10 +116,12 @@ module.exports = {
                       precio: plato.precio,
                       unidades: plato.unidades,
                       valor_total: valorTotal,
-                      nombre_cliente: cliente.nombre,
                     };
 
-                    if (configuracion.esDomicilios) fila.direccion_cliente = cliente.direccion;
+                    if (configuracion.esDomicilios) {
+                      const cliente = Utils.obtenerCliente(Constantes);
+                      fila.identificador_cliente = cliente.id;
+                    }
 
                     Object
                       .values(fila)
@@ -123,6 +133,7 @@ module.exports = {
                   });
 
                   ordenId += 1;
+                  numeroTotalPlatos += platos.length;
                 });
             });
 
@@ -137,7 +148,7 @@ module.exports = {
 
         Utils
           .batchPromises(1, fechasAgrupadasPorMes, true, generarDatos)
-          .then(() => console.log(`Numero total de registros: ${ordenId - 1000}`))
+          .then(() => console.log(`Numero total de ordenes: ${ordenId - 1000} | Numero total de platos: ${numeroTotalPlatos}`))
           .catch(console.error);
     });
 

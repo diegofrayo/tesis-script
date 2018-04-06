@@ -9,7 +9,7 @@ const crearNumeroAleatorio = (minimo, maximo) => {
   return numeroAleatorio + minimo;
 };
 
-const crearArreglo = longitud => Array.from(Array(longitud).keys());
+const crearArreglo = longitud => Array.from(Array(longitud).keys()).map(value => value + 1);
 
 const obtenerBebida = platos => {
   const bebidas = platos.filter(item => item.categoria === 'Bebidas');
@@ -21,8 +21,24 @@ const obtenerPlatoAdicional = platos => {
   return obtenerItemAleatoriamente(platosAdicionales);
 };
 
-const obtenerPlatoFuerte = platos => {
-  const platosFuertes = platos.filter(item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas');
+const obtenerPlatoFuerte = (platos, franjaHoraria) => {
+
+  let platosFuertes;
+
+  if (franjaHoraria === 'NOCHE') {
+
+    const numeroAleatorio = Math.round(Math.random() * 100);
+
+    if (numeroAleatorio <= 70) {
+      platosFuertes = platos.filter(item => item.categoria === 'Ceviche');
+    } else {
+      platosFuertes = platos.filter(item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas');
+    }
+
+  } else {
+    platosFuertes = platos.filter(item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas');
+  }
+
   return obtenerItemAleatoriamente(platosFuertes);
 };
 
@@ -59,63 +75,139 @@ module.exports = {
     return new Date(fecha.setDate(dia));
   },
 
-  crearHora: Constantes => {
-    const { HORAS, MINUTOS } = Constantes;
+  crearHora: (horas, Constantes) => {
+    const { MINUTOS } = Constantes;
     const formatearHora = numero => (numero < 10 ? `0${numero}` : numero);
-    return `${formatearHora(obtenerItemAleatoriamente(HORAS))}:${formatearHora(obtenerItemAleatoriamente(MINUTOS))}`;
+    return `${formatearHora(obtenerItemAleatoriamente(horas))}:${formatearHora(obtenerItemAleatoriamente(MINUTOS))}`;
   },
 
   crearNumeroDeMesa: Constantes => obtenerItemAleatoriamente(Constantes.MESAS),
 
-  crearNumeroDePersonas: Constantes => obtenerItemAleatoriamente(Constantes.NUMERO_PERSONAS),
-
-  crearTipoClienteNormal: (numeroDePersonas, Constantes) => {
-
-    const { TIPOS_DE_CLIENTE } = Constantes;
-
-    if (numeroDePersonas === 1) {
-      return TIPOS_DE_CLIENTE.INDIVIDUAL[0];
-    } else if (numeroDePersonas === 2) {
-      return obtenerItemAleatoriamente(TIPOS_DE_CLIENTE.DOS_PERSONAS);
-    }
-
-    return obtenerItemAleatoriamente(TIPOS_DE_CLIENTE.GRUPAL);
-  },
-
-  crearTipoClienteDomicilios: (numeroPlatos, Constantes) => {
-
-    const { TIPOS_DE_CLIENTE } = Constantes;
-
-    if (numeroPlatos < 4) {
-      return TIPOS_DE_CLIENTE.INDIVIDUAL[0];
-    }
-
-    return obtenerItemAleatoriamente(['EMPRESA', 'GRUPO']);
-  },
-
-  obtenerListadoDePlatos: (numeroDePersonas, currentYear, Constantes) => {
+  obtenerListadoDePlatos: (numeroDePersonas, currentYear, franjaHoraria, Constantes, esDomicilios) => {
 
     const { PLATOS } = Constantes;
     const listadoPlatos = {};
 
     crearArreglo(numeroDePersonas)
       .map(() => {
-        const platoFuerte = obtenerPlatoFuerte(PLATOS);
-        const bebida = obtenerBebida(PLATOS);
+        const platoFuerte = obtenerPlatoFuerte(PLATOS, franjaHoraria);
         agregarPlatoAOrden(listadoPlatos, platoFuerte, currentYear);
-        agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
+
+        if (esDomicilios === false) {
+          const bebida = obtenerBebida(PLATOS);
+          agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
+        }
       });
 
     const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(PLATOS) : undefined;
     agregarPlatoAOrden(listadoPlatos, platoAdicional, currentYear);
 
+    if (esDomicilios === true && crearNumeroAleatorio(0, 1) === 1) {
+      const bebida = obtenerBebida(PLATOS);
+      agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
+    }
+
     return Object.values(listadoPlatos);
   },
 
-  obtenerCliente: (tipo, Constantes) => {
+  calcularRangosHorarios: (numeroOrdenes, esDomicilios) => {
+
+    let inicio;
+    let final;
+    const rangos = [];
+
+    if (esDomicilios) {
+
+      inicio = 1;
+      final = Math.floor((numeroOrdenes / 100) * 90);
+      rangos.push({ inicio, final, franja: 'MEDIO DIA',horas: [11, 12, 1] });
+
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * 10);
+      rangos.push({ inicio, final, franja: 'TARDE',horas: [2, 3, 4, 5] });
+
+    } else {
+
+      inicio = 1;
+      final = Math.floor((numeroOrdenes / 100) * 85);
+      rangos.push({ inicio, final, franja: 'MEDIO DIA', horas: [11, 12, 1] });
+
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * 10);
+      rangos.push({ inicio, final, franja: 'TARDE', horas: [2, 3, 4, 5] });
+
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * 5);
+      rangos.push({ inicio, final, franja: 'NOCHE', horas: [6, 7, 8] });
+
+    }
+
+    return rangos;
+  },
+
+  calcularRangosTipoCliente: (numeroOrdenes, esDomicilios) => {
+
+    let inicio = 0;
+    let final = 0;
+    const porcentajes = esDomicilios ? [0, 40, 10, 0, 50] : [60, 20, 10, 5, 5];
+    const rangos = [];
+
+    if (porcentajes[0]) {
+      inicio = 1;
+      final = Math.floor((numeroOrdenes / 100) * porcentajes[0]);
+      rangos.push({ inicio, final, tipo: 'FAMILIA' });
+    }
+
+    if (porcentajes[1]) {
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[1]);
+      rangos.push({ inicio, final, tipo: 'INDIVIDUAL' });
+    }
+
+    if (porcentajes[2]) {
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[2]);
+      rangos.push({ inicio, final, tipo: 'EMPRESA' });
+    }
+
+    if (porcentajes[3]) {
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[3]);
+      rangos.push({ inicio, final, tipo: 'PAREJA' });
+    }
+
+    if (porcentajes[4]) {
+      inicio = final + 1;
+      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[4]);
+      rangos.push({ inicio, final, tipo: 'GRUPO' });
+    }
+
+    return rangos;
+  },
+
+  obtenerTipoCliente: (rangos, indice) => {
+    return rangos.filter(rango => indice >= rango.inicio && indice <= rango.final)[0].tipo;
+  },
+
+  obtenerNumeroPersonas: (tipoCliente, franjaHoraria) => {
+    switch (tipoCliente) {
+      case 'INDIVIDUAL':
+        return 1;
+      case 'PAREJA':
+        return 2;
+      default:
+        if (franjaHoraria === 'NOCHE') return crearNumeroAleatorio(2, 4);
+        return crearNumeroAleatorio(2, 10);
+    }
+  },
+
+  obtenerRangoHorario: (rangos, indice) => {
+    return rangos.filter(rango => indice >= rango.inicio && indice <= rango.final)[0];
+  },
+
+  obtenerCliente: (Constantes) => {
     const { CLIENTES } = Constantes;
-    const clientes = CLIENTES.filter(item => item.tipo === tipo);
-    return obtenerItemAleatoriamente(clientes);
+    return obtenerItemAleatoriamente(CLIENTES);
   },
 
   /* eslint-disable */
@@ -134,7 +226,7 @@ module.exports = {
         };
       })
       .reduce((chain, work) => chain.then(work), Promise.resolve([]));
-  }
+  },
   /* eslint-enable */
 
 };

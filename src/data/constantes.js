@@ -2,18 +2,30 @@ const Clientes = require('./clientes');
 const Platos = require('./platos');
 const Utils = require('./../utils');
 
-const COLUMNAS = [
-  'ORDEN',
+const COLUMNAS_VENTAS_RESTAURANTE = [
+  'NUMERO DE ORDEN',
   'FECHA',
   'HORA',
+  'TIPO DE CLIENTE',
   'NUMERO DE MESA',
+  'NUMERO DE PERSONAS',
+  'PLATO',
+  'PRECIO',
+  'UNIDADES',
+  'VALOR TOTAL ORDEN',
+];
+
+const COLUMNAS_VENTAS_DOMICILIOS = [
+  'NUMERO DE ORDEN',
+  'FECHA',
+  'HORA',
   'TIPO DE CLIENTE',
   'NUMERO DE PERSONAS',
   'PLATO',
   'PRECIO',
   'UNIDADES',
   'VALOR TOTAL ORDEN',
-  'NOMBRE CLIENTE',
+  'IDENTIFICADOR DE CLIENTE',
 ];
 
 module.exports = {
@@ -35,31 +47,26 @@ module.exports = {
 
   YEARS: [2017, 2018],
 
-  HORAS: [11, 12, 1, 2, 3, 4, 5, 6, 7, 8],
-
   MINUTOS: Utils.crearArreglo(59),
 
-  MESAS: Utils.crearArreglo(40).map(current => current + 1),
-
-  NUMERO_PERSONAS: Utils.crearArreglo(15).map(current => current + 1),
+  MESAS: Utils.crearArreglo(40),
 
   TIPOS_DE_CLIENTE: {
     INDIVIDUAL: ['INDIVIDUO'],
     DOS_PERSONAS: ['EMPRESA', 'FAMILIA', 'GRUPO', 'PAREJA'],
-    GRUPAL: ['EMPRESA', 'FAMILIA', 'GRUPO'],
+    GRUPO: ['EMPRESA', 'FAMILIA', 'GRUPO'],
   },
 
-  COLUMNAS_VENTAS_NORMAL: COLUMNAS,
+  COLUMNAS_VENTAS_RESTAURANTE,
 
-  COLUMNAS_VENTAS_DOMICILIOS: COLUMNAS.concat(['DIRECCION CLIENTE']),
+  COLUMNAS_VENTAS_DOMICILIOS,
 
   COLUMNAS_CLIENTES: [
+    'IDENTIFICADOR',
     'NOMBRE',
     'DIRECCION',
     'TELEFONO',
-    'CELULAR',
-    'CORREO ELECTRONICO',
-    'FECHA CUMPLEANOS',
+    'GENERO',
     'TIPO',
   ],
 

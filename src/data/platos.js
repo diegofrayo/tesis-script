@@ -1,4 +1,6 @@
 const platos = [
+
+  // -------------- Arroces --------------
   {
     nombre: 'Arroz a la marinera',
     categoria: 'Arroces',
@@ -30,6 +32,7 @@ const platos = [
     costo_produccion: { 2017: 35000 - 2000 - 5000, 2018: 35000 - 5000 },
   },
 
+  // -------------- Cazuelas --------------
   {
     nombre: 'Cazuela de camarones',
     categoria: 'Cazuelas',
@@ -55,6 +58,7 @@ const platos = [
     costo_produccion: { 2017: 35000 - 1000 - 4000, 2018: 35000 - 4000 },
   },
 
+  // -------------- Especialidades --------------
   {
     nombre: 'Langosta rellena',
     categoria: 'Especialidades',
@@ -146,6 +150,7 @@ const platos = [
     costo_produccion: { 2017: 19000 - 2000 - 5000, 2018: 19000 - 5000 },
   },
 
+  // -------------- Ceviches --------------
   {
     nombre: 'Ceviche de camarón',
     categoria: 'Ceviches',
@@ -183,6 +188,7 @@ const platos = [
     costo_produccion: { 2017: 35000 - 1000 - 4000, 2018: 35000 - 4000 },
   },
 
+  // -------------- Pescados --------------
   {
     nombre: 'Pescado frito',
     categoria: 'Pescados',
@@ -232,6 +238,15 @@ const platos = [
     costo_produccion: { 2017: 30000 - 2000 - 5000, 2018: 30000 - 5000 },
   },
 
+  // -------------- Ejecutivos --------------
+  {
+    nombre: 'Ejecutivo con ',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 10000 },
+    costo_produccion: { 2017: 10000 / 2, 2018: 10000 / 2 },
+  },
+
+  // -------------- Adicionales --------------
   {
     nombre: 'Porción de arroz',
     categoria: 'Adicionales',
@@ -263,6 +278,7 @@ const platos = [
     costo_produccion: { 2017: 10000 / 2, 2018: 10000 / 2 },
   },
 
+  // -------------- Bebidas --------------
   {
     nombre: 'Gaseosa 350ml',
     categoria: 'Bebidas',

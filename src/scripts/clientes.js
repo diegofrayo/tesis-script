@@ -11,15 +11,21 @@ module.exports = {
     const archivoExcelClientes = new xl.Workbook();
     const hojaDeExcelClientes = archivoExcelClientes.addWorksheet('Clientes');
 
-    Object.values(Constantes.COLUMNAS_CLIENTES).forEach((value, indice) => {
-      hojaDeExcelClientes.cell(1, indice + 1).string(value);
-    });
-
-    Constantes.CLIENTES.forEach((cliente, clienteIndice) => {
-      Object.values(cliente).forEach((value, indice) => {
-        hojaDeExcelClientes.cell(clienteIndice + 2, indice + 1).string(value);
+    Object
+      .values(Constantes.COLUMNAS_CLIENTES)
+      .forEach((value, indice) => {
+        hojaDeExcelClientes.cell(1, indice + 1).string(value);
       });
-    });
+
+    Constantes
+      .CLIENTES
+      .forEach((cliente, clienteIndice) => {
+        Object
+          .values(cliente)
+          .forEach((value, indice) => {
+            hojaDeExcelClientes.cell(clienteIndice + 2, indice + 1)[typeof value](value);
+          });
+      });
 
     archivoExcelClientes.write(`./output/Clientes.xlsx`, err => {
       if (err) {
