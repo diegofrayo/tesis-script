@@ -33,7 +33,7 @@ module.exports = {
         const fechasAgrupadasPorMes = Object.values(
           Utils
             .crearArreglo(year === new Date().getFullYear() ? 119 : 365)
-            .map(indice => Utils.crearFecha(year, indice + 1))
+            .map(indice => Utils.crearFecha(year, indice))
             .reduce((acum, fecha) => {
               const mes = fecha.getMonth();
               let fechas = acum[mes];
@@ -72,16 +72,17 @@ module.exports = {
               const rangosHorarios = Utils.calcularRangosHorarios(numeroOrdenes, configuracion.esDomicilios);
               const rangosTipoCliente = Utils.calcularRangosTipoCliente(numeroOrdenes, configuracion.esDomicilios);
 
-              Utils
+              const ordenes = Utils
                 .crearArreglo(numeroOrdenes)
-                .forEach(ordenIndice => {
+                .map(ordenIndice => {
 
                   const rangoHorario = Utils.obtenerRangoHorario(rangosHorarios, ordenIndice);
-                  const hora = Utils.crearHora(rangoHorario.horas, Constantes);
+                  const horaTomaOrden = Utils.crearHora(rangoHorario.horas, Constantes);
+                  const horaFactura = Utils.crearHoraFacturacion(horaTomaOrden);
                   const tipoCliente = Utils.obtenerTipoCliente(rangosTipoCliente, ordenIndice);
 
                   const numeroPersonas = Utils.obtenerNumeroPersonas(tipoCliente, rangoHorario.franja);
-                  const platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes, configuracion.esDomicilios);
+                  let platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes, configuracion.esDomicilios);
                   const valorTotal = platos.reduce((acum, curr) => {
                     acum += curr.precio * curr.unidades;
                     return acum;
@@ -91,27 +92,24 @@ module.exports = {
 
                   if (!configuracion.esDomicilios) {
                     orden = {
-                      numero_orden: ordenId,
                       fecha: Utils.formatearFecha(fecha),
-                      hora,
-                      tipo_cliente: tipoCliente,
+                      hora_toma_orden: horaTomaOrden,
+                      hora_factura: horaFactura,
                       numero_mesa: Utils.crearNumeroDeMesa(Constantes),
-                      numero_personas: numeroPersonas,
                     };
                   } else {
                     orden = {
-                      numero_orden: ordenId,
                       fecha: Utils.formatearFecha(fecha),
-                      hora,
-                      tipo_cliente: tipoCliente,
-                      numero_personas: numeroPersonas,
+                      hora_toma_orden: horaTomaOrden,
+                      hora_factura: horaFactura,
                     };
                   }
 
-                  platos.forEach(plato => {
+                  platos = platos.map(plato => {
 
                     const fila = {
                       ...orden,
+                      codigo_plato: plato.id,
                       plato: plato.nombre,
                       precio: plato.precio,
                       unidades: plato.unidades,
@@ -121,20 +119,35 @@ module.exports = {
                     if (configuracion.esDomicilios) {
                       const cliente = Utils.obtenerCliente(Constantes);
                       fila.identificador_cliente = cliente.id;
+                      fila.nombre_cliente = cliente.nombre;
                     }
 
-                    Object
-                      .values(fila)
-                      .forEach((value, indice) => {
-                        hojaDeExcel.cell(hojaDeExcelActualFila, indice + 1)[typeof value](value);
-                      });
-
-                    hojaDeExcelActualFila += 1;
+                    return fila;
                   });
 
-                  ordenId += 1;
                   numeroTotalPlatos += platos.length;
+
+                  return {
+                    hora_toma_orden: horaTomaOrden,
+                    platos,
+                  };
                 });
+
+                ordenes.sort(Utils.ordenar('hora_toma_orden', 'asc'));
+
+                ordenes.forEach((orden, ordenIndice) => {
+                  orden.platos.forEach((plato) => {
+                    hojaDeExcel.cell(hojaDeExcelActualFila, 1).number(ordenId + ordenIndice + 1);
+                    Object
+                      .values(plato)
+                      .forEach((value, indice) => {
+                        hojaDeExcel.cell(hojaDeExcelActualFila, indice + 2)[typeof value](value);
+                      });
+                    hojaDeExcelActualFila += 1;
+                  });
+                });
+
+                ordenId += numeroOrdenes;
             });
 
             return guardarArchivo(

@@ -27,11 +27,12 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development node src/index.js",
     "start-clientes": "cross-env NODE_ENV=development node src/index.js --area=clientes",
-    "start-compras": "cross-env NODE_ENV=development node src/index.js --area=compras",
+    "start-gastos": "cross-env NODE_ENV=development node src/index.js --area=gastos",
     "start-domicilios": "cross-env NODE_ENV=development node src/index.js --area=domicilios",
     "start-insumos": "cross-env NODE_ENV=development node src/index.js --area=insumos",
     "start-normal": "cross-env NODE_ENV=development node src/index.js --area=normal",
     "start-proveedores": "cross-env NODE_ENV=development node src/index.js --area=proveedores",
+    "start-fechas": "cross-env NODE_ENV=development node src/index.js --area=fechas",
     "lint": "esw -w -c .eslintrc src/**/*.js"
   },
   "devDependencies": {

@@ -1,5 +1,4 @@
 const platos = [
-
   // -------------- Arroces --------------
   {
     nombre: 'Arroz a la marinera',
@@ -220,7 +219,7 @@ const platos = [
     costo_produccion: { 2017: 20000 - 2000 - 5000, 2018: 20000 - 5000 },
   },
   {
-    nombre: 'Pescaso a la sabrosura del mar',
+    nombre: 'Pescado a la sabrosura del mar',
     categoria: 'Pescados',
     precio: { 2017: 20000 - 2000, 2018: 20000 },
     costo_produccion: { 2017: 20000 - 2000 - 5000, 2018: 20000 - 5000 },
@@ -271,12 +270,12 @@ const platos = [
     precio: { 2017: 5000, 2018: 5000 },
     costo_produccion: { 2017: 5000 / 2, 2018: 5000 / 2 },
   },
-  {
-    nombre: 'Porción de pescado',
-    categoria: 'Adicionales',
-    precio: { 2017: 10000, 2018: 10000 },
-    costo_produccion: { 2017: 10000 / 2, 2018: 10000 / 2 },
-  },
+  // {
+  //   nombre: 'Porción de pescado',
+  //   categoria: 'Adicionales',
+  //   precio: { 2017: 10000, 2018: 10000 },
+  //   costo_produccion: { 2017: 10000 / 2, 2018: 10000 / 2 },
+  // },
 
   // -------------- Bebidas --------------
   {
@@ -330,5 +329,6 @@ const platos = [
 ];
 
 module.exports = {
-  generar: () => platos.map((item, index) => ({ id: index + 1, ...item })),
+  generar: () =>
+    platos.map((item, index) => ({ id: `0${index + 1 <= 9 ? '0' : ''}${index + 1}`, ...item })),
 };

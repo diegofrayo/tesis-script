@@ -9,6 +9,8 @@ const crearNumeroAleatorio = (minimo, maximo) => {
   return numeroAleatorio + minimo;
 };
 
+const formatearHora = numero => (numero < 10 ? `0${numero}` : numero);
+
 const crearArreglo = longitud => Array.from(Array(longitud).keys()).map(value => value + 1);
 
 const obtenerBebida = platos => {
@@ -30,22 +32,29 @@ const obtenerPlatoFuerte = (platos, franjaHoraria) => {
     const numeroAleatorio = Math.round(Math.random() * 100);
 
     if (numeroAleatorio <= 70) {
-      platosFuertes = platos.filter(item => item.categoria === 'Ceviche');
+      platosFuertes = platos.filter(item => item.categoria === 'Ceviches');
     } else {
-      platosFuertes = platos.filter(item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas');
+      platosFuertes = platos.filter(
+        item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas' && item.categoria !== 'Ejecutivo',
+      );
     }
 
   } else {
-    platosFuertes = platos.filter(item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas');
+    platosFuertes = platos.filter(
+      item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas',
+    );
   }
 
   return obtenerItemAleatoriamente(platosFuertes);
 };
 
 const agregarPlatoAOrden = (listadoPlatos, plato, currentYear) => {
+
   if (plato === undefined) return;
+
   if (listadoPlatos[plato.id] === undefined) {
     listadoPlatos[plato.id] = {
+      id: plato.id,
       nombre: plato.nombre,
       precio: plato.precio[currentYear],
       unidades: 1,
@@ -56,11 +65,15 @@ const agregarPlatoAOrden = (listadoPlatos, plato, currentYear) => {
 };
 
 const crearTelefonoFijo = () => {
-  return `7${crearNumeroAleatorio(3, 4)}${crearNumeroAleatorio(2, 7)}${crearArreglo(4).map(() => crearNumeroAleatorio(0, 9)).join('')}`;
+  return `7${crearNumeroAleatorio(3, 4)}${crearNumeroAleatorio(2, 7)}${crearArreglo(4)
+    .map(() => crearNumeroAleatorio(0, 9))
+    .join('')}`;
 };
 
 const crearTelefonoCelular = () => {
-  return `3${crearNumeroAleatorio(0, 2)}${crearNumeroAleatorio(0, 3)}${crearArreglo(7).map(() => crearNumeroAleatorio(0, 9)).join('')}`;
+  return `3${crearNumeroAleatorio(0, 2)}${crearNumeroAleatorio(0, 3)}${crearArreglo(7)
+    .map(() => crearNumeroAleatorio(0, 9))
+    .join('')}`;
 };
 
 const crearCadenaAleatoria = (longitud = 5) => {
@@ -103,19 +116,45 @@ module.exports = {
 
   crearHora: (horas, Constantes) => {
     const { MINUTOS } = Constantes;
-    const formatearHora = numero => (numero < 10 ? `0${numero}` : numero);
-    return `${formatearHora(obtenerItemAleatoriamente(horas))}:${formatearHora(obtenerItemAleatoriamente(MINUTOS))}`;
+    return `${formatearHora(obtenerItemAleatoriamente(horas))}:${formatearHora(
+      obtenerItemAleatoriamente(MINUTOS),
+    )}`;
+  },
+
+  crearHoraFacturacion: horaTomaOrden => {
+
+    const minutosAleatorio = crearNumeroAleatorio(30, 60);
+
+    const itemsHora = horaTomaOrden.split(':');
+    let hora = Number(itemsHora[0]);
+    let minutos = Number(itemsHora[1]) + minutosAleatorio;
+
+    if (minutos >= 60) {
+      hora += 1;
+      minutos -= 60;
+    }
+
+    return `${formatearHora(hora)}:${formatearHora(minutos)}`;
   },
 
   crearNumeroDeMesa: Constantes => obtenerItemAleatoriamente(Constantes.MESAS),
 
-  obtenerListadoDePlatos: (numeroDePersonas, currentYear, franjaHoraria, Constantes, esDomicilios) => {
+  obtenerListadoDePlatos: (
+    numeroDePersonas,
+    currentYear,
+    franjaHoraria,
+    Constantes,
+    esDomicilios,
+  ) => {
 
     const { PLATOS } = Constantes;
     const listadoPlatos = {};
 
+    if (franjaHoraria == 'NOCHE') debugger;
+
     crearArreglo(numeroDePersonas)
       .map(() => {
+
         const platoFuerte = obtenerPlatoFuerte(PLATOS, franjaHoraria);
         agregarPlatoAOrden(listadoPlatos, platoFuerte, currentYear);
 
@@ -143,29 +182,25 @@ module.exports = {
     const rangos = [];
 
     if (esDomicilios) {
-
       inicio = 1;
-      final = Math.floor((numeroOrdenes / 100) * 90);
-      rangos.push({ inicio, final, franja: 'MEDIO DIA',horas: [11, 12, 1] });
+      final = Math.floor(numeroOrdenes / 100 * 90);
+      rangos.push({ inicio, final, franja: 'MEDIO DIA', horas: [11, 12, 13] });
 
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * 10);
-      rangos.push({ inicio, final, franja: 'TARDE',horas: [2, 3, 4, 5] });
-
+      final = inicio + Math.floor(numeroOrdenes / 100 * 10);
+      rangos.push({ inicio, final, franja: 'TARDE', horas: [14, 15, 16, 17] });
     } else {
-
       inicio = 1;
-      final = Math.floor((numeroOrdenes / 100) * 85);
-      rangos.push({ inicio, final, franja: 'MEDIO DIA', horas: [11, 12, 1] });
+      final = Math.floor(numeroOrdenes / 100 * 75);
+      rangos.push({ inicio, final, franja: 'MEDIO DIA', horas: [11, 12, 13] });
 
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * 10);
-      rangos.push({ inicio, final, franja: 'TARDE', horas: [2, 3, 4, 5] });
+      final = inicio + Math.floor(numeroOrdenes / 100 * 15);
+      rangos.push({ inicio, final, franja: 'TARDE', horas: [14, 15, 16, 17] });
 
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * 5);
-      rangos.push({ inicio, final, franja: 'NOCHE', horas: [6, 7, 8] });
-
+      final = inicio + Math.floor(numeroOrdenes / 100 * 10);
+      rangos.push({ inicio, final, franja: 'NOCHE', horas: [18, 19, 20] });
     }
 
     return rangos;
@@ -180,31 +215,31 @@ module.exports = {
 
     if (porcentajes[0]) {
       inicio = 1;
-      final = Math.floor((numeroOrdenes / 100) * porcentajes[0]);
+      final = Math.floor(numeroOrdenes / 100 * porcentajes[0]);
       rangos.push({ inicio, final, tipo: 'FAMILIA' });
     }
 
     if (porcentajes[1]) {
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[1]);
+      final = inicio + Math.floor(numeroOrdenes / 100 * porcentajes[1]);
       rangos.push({ inicio, final, tipo: 'INDIVIDUAL' });
     }
 
     if (porcentajes[2]) {
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[2]);
+      final = inicio + Math.floor(numeroOrdenes / 100 * porcentajes[2]);
       rangos.push({ inicio, final, tipo: 'EMPRESA' });
     }
 
     if (porcentajes[3]) {
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[3]);
+      final = inicio + Math.floor(numeroOrdenes / 100 * porcentajes[3]);
       rangos.push({ inicio, final, tipo: 'PAREJA' });
     }
 
     if (porcentajes[4]) {
       inicio = final + 1;
-      final = inicio + Math.floor((numeroOrdenes / 100) * porcentajes[4]);
+      final = inicio + Math.floor(numeroOrdenes / 100 * porcentajes[4]);
       rangos.push({ inicio, final, tipo: 'GRUPO' });
     }
 
@@ -231,7 +266,7 @@ module.exports = {
     return rangos.filter(rango => indice >= rango.inicio && indice <= rango.final)[0];
   },
 
-  obtenerCliente: (Constantes) => {
+  obtenerCliente: Constantes => {
     const { CLIENTES } = Constantes;
     return obtenerItemAleatoriamente(CLIENTES);
   },
@@ -279,7 +314,6 @@ module.exports = {
   },
 
   crearTelefono: tipoCliente => {
-
     if (tipoCliente === 'EMPRESA') {
       return crearTelefonoFijo();
     }
@@ -288,7 +322,6 @@ module.exports = {
   },
 
   crearDireccion: () => {
-
     const BARRIOS = [
       '14 De Octubre',
       '25 De Mayo',
@@ -345,19 +378,16 @@ module.exports = {
   batchPromises: (batchSize, array, getWholeArray, callback) => {
     batchSize = batchSize > array.length ? array.length : batchSize;
     return array
-      .map((_, i) => i % batchSize ? '' : array.slice(i, i + batchSize))
+      .map((_, i) => (i % batchSize ? '' : array.slice(i, i + batchSize)))
       .filter(group => group !== '')
       .map((group, index) => {
         return res => {
           return Promise.all(
-            group
-              .map(getWholeArray ? callback(array, index * batchSize) : callback))
-              .then(r => res.concat(r)
-          );
+            group.map(getWholeArray ? callback(array, index * batchSize) : callback),
+          ).then(r => res.concat(r));
         };
       })
       .reduce((chain, work) => chain.then(work), Promise.resolve([]));
   },
   /* eslint-enable */
-
 };

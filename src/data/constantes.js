@@ -1,16 +1,16 @@
 const Clientes = require('./clientes');
-const Insumos = require('./insumos');
+const Fechas = require('./fechas');
 const Platos = require('./platos');
-const Proveedores = require('./proveedores');
 const Utils = require('./../utils');
+// const Insumos = require('./insumos');
 
 const COLUMNAS_VENTAS_RESTAURANTE = [
-  'NUMERO DE ORDEN',
+  'NUMERO DE FACTURA',
   'FECHA',
-  'HORA',
-  'TIPO DE CLIENTE',
+  'HORA TOMA ORDEN',
+  'HORA FACTURACION',
   'NUMERO DE MESA',
-  'NUMERO DE PERSONAS',
+  'CODIGO DEL PLATO',
   'PLATO',
   'PRECIO',
   'UNIDADES',
@@ -18,16 +18,17 @@ const COLUMNAS_VENTAS_RESTAURANTE = [
 ];
 
 const COLUMNAS_VENTAS_DOMICILIOS = [
-  'NUMERO DE ORDEN',
+  'NUMERO DE FACTURA',
   'FECHA',
-  'HORA',
-  'TIPO DE CLIENTE',
-  'NUMERO DE PERSONAS',
+  'HORA TOMA ORDEN',
+  'HORA FACTURACION',
+  'CODIGO DEL PLATO',
   'PLATO',
   'PRECIO',
   'UNIDADES',
   'VALOR TOTAL ORDEN',
   'IDENTIFICADOR DE CLIENTE',
+  'NOMBRE DEL CLIENTE',
 ];
 
 module.exports = {
@@ -53,11 +54,13 @@ module.exports = {
 
   MESAS: Utils.crearArreglo(40),
 
+  /*
   TIPOS_DE_CLIENTE: {
     INDIVIDUAL: ['INDIVIDUO'],
     DOS_PERSONAS: ['EMPRESA', 'FAMILIA', 'GRUPO', 'PAREJA'],
     GRUPO: ['EMPRESA', 'FAMILIA', 'GRUPO'],
   },
+  */
 
   COLUMNAS_VENTAS_RESTAURANTE,
 
@@ -87,12 +90,14 @@ module.exports = {
     'VALOR TOTAL ORDEN',
   ],
 
+  COLUMNAS_FECHAS: ['FECHA', 'DIA', 'SEMANA', 'MES', 'AÑO'],
+
   CLIENTES: Clientes.generar(),
 
   PLATOS: Platos.generar(),
 
-  INSUMOS: Insumos.generar(),
+  FECHAS: Fechas.generar(),
 
-  PROVEEDORES: Proveedores.generar(),
+  // INSUMOS: Insumos.generar(),
 
 };
