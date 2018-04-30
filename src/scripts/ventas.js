@@ -19,7 +19,27 @@ const guardarArchivo = (archivoExcel, nombreArchivo) => {
 
 module.exports = {
 
-  ejecutar: configuracion => {
+  ejecutar: configuracionScript => {
+
+    let configuracion;
+
+    if (configuracionScript === 'domicilios') {
+      configuracion = {
+        rangoNumerosDeOrdenNormal: [15, 20],
+        rangoNumerosDeOrdenFinDeSemana: [40, 50],
+        esDomicilios: true,
+        directorioArchivos: 'Ventas A Domicilio',
+        columnas: Constantes.COLUMNAS_VENTAS_DOMICILIOS,
+      };
+    } else {
+      configuracion = {
+        rangoNumerosDeOrdenNormal: [50, 70],
+        rangoNumerosDeOrdenFinDeSemana: [200, 250],
+        esDomicilios: false,
+        directorioArchivos: 'Ventas En Restaurante',
+        columnas: Constantes.COLUMNAS_VENTAS_RESTAURANTE,
+      };
+    }
 
     console.log(`Creando archivo [${configuracion.directorioArchivos}]...`, new Date());
 
@@ -77,27 +97,30 @@ module.exports = {
                 .map(ordenIndice => {
 
                   const rangoHorario = Utils.obtenerRangoHorario(rangosHorarios, ordenIndice);
-                  const horaTomaOrden = Utils.crearHora(rangoHorario.horas, Constantes);
+                  const horaTomaOrden = Utils.crearHora(rangoHorario.horas, Constantes.MINUTOS);
                   const horaFactura = Utils.crearHoraFacturacion(horaTomaOrden);
                   const tipoCliente = Utils.obtenerTipoCliente(rangosTipoCliente, ordenIndice);
 
                   const numeroPersonas = Utils.obtenerNumeroPersonas(tipoCliente, rangoHorario.franja);
-                  let platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes, configuracion.esDomicilios);
+                  let platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes.PLATOS, configuracion.esDomicilios);
                   const valorTotal = platos.reduce((acum, curr) => {
                     acum += curr.precio * curr.unidades;
                     return acum;
                   }, 0);
 
                   let orden;
+                  let persona;
 
                   if (!configuracion.esDomicilios) {
+                    persona = Utils.obtenerItemAleatoriamente(Constantes.MESEROS);
                     orden = {
                       fecha: Utils.formatearFecha(fecha),
                       hora_toma_orden: horaTomaOrden,
                       hora_factura: horaFactura,
-                      numero_mesa: Utils.crearNumeroDeMesa(Constantes),
+                      numero_mesa: Utils.obtenerItemAleatoriamente(Constantes.MESAS),
                     };
                   } else {
+                    persona = Utils.obtenerItemAleatoriamente(Constantes.CLIENTES);
                     orden = {
                       fecha: Utils.formatearFecha(fecha),
                       hora_toma_orden: horaTomaOrden,
@@ -117,9 +140,11 @@ module.exports = {
                     };
 
                     if (configuracion.esDomicilios) {
-                      const cliente = Utils.obtenerCliente(Constantes);
-                      fila.identificador_cliente = cliente.id;
-                      fila.nombre_cliente = cliente.nombre;
+                      fila.identificador_cliente = persona.id;
+                      fila.nombre_cliente = persona.nombre;
+                    } else {
+                      fila.identificador_mesero = persona.id;
+                      fila.nombre_mesero = persona.nombre;
                     }
 
                     return fila;

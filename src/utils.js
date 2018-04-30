@@ -9,7 +9,7 @@ const crearNumeroAleatorio = (minimo, maximo) => {
   return numeroAleatorio + minimo;
 };
 
-const formatearHora = numero => (numero < 10 ? `0${numero}` : numero);
+const formatearNumero = numero => (numero < 10 ? `0${numero}` : numero);
 
 const crearArreglo = longitud => Array.from(Array(longitud).keys()).map(value => value + 1);
 
@@ -76,10 +76,16 @@ const crearTelefonoCelular = () => {
     .join('')}`;
 };
 
-const crearCadenaAleatoria = (longitud = 5) => {
+const crearCadenaAleatoria = (longitud = 5, opcion = '') => {
 
   let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let possible;
+
+  if (opcion === 'numeros') {
+    possible = '1234567890';
+  } else {
+    possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  }
 
   for (let i = 0; i < longitud; i += 1) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
@@ -92,15 +98,17 @@ module.exports = {
 
   crearArreglo,
 
-  crearNumeroAleatorio,
-
-  obtenerItemAleatoriamente,
+  formatearNumero,
 
   crearTelefonoFijo,
 
   crearTelefonoCelular,
 
   crearCadenaAleatoria,
+
+  crearNumeroAleatorio,
+
+  obtenerItemAleatoriamente,
 
   esFinDeSemana: fecha => {
     const dia = fecha.getDay();
@@ -114,10 +122,9 @@ module.exports = {
     return new Date(fecha.setDate(dia));
   },
 
-  crearHora: (horas, Constantes) => {
-    const { MINUTOS } = Constantes;
-    return `${formatearHora(obtenerItemAleatoriamente(horas))}:${formatearHora(
-      obtenerItemAleatoriamente(MINUTOS),
+  crearHora: (horas, minutos) => {
+    return `${formatearNumero(obtenerItemAleatoriamente(horas))}:${formatearNumero(
+      obtenerItemAleatoriamente(minutos),
     )}`;
   },
 
@@ -134,41 +141,36 @@ module.exports = {
       minutos -= 60;
     }
 
-    return `${formatearHora(hora)}:${formatearHora(minutos)}`;
+    return `${formatearNumero(hora)}:${formatearNumero(minutos)}`;
   },
-
-  crearNumeroDeMesa: Constantes => obtenerItemAleatoriamente(Constantes.MESAS),
 
   obtenerListadoDePlatos: (
     numeroDePersonas,
     currentYear,
     franjaHoraria,
-    Constantes,
+    platos,
     esDomicilios,
   ) => {
 
-    const { PLATOS } = Constantes;
     const listadoPlatos = {};
-
-    if (franjaHoraria == 'NOCHE') debugger;
 
     crearArreglo(numeroDePersonas)
       .map(() => {
 
-        const platoFuerte = obtenerPlatoFuerte(PLATOS, franjaHoraria);
+        const platoFuerte = obtenerPlatoFuerte(platos, franjaHoraria);
         agregarPlatoAOrden(listadoPlatos, platoFuerte, currentYear);
 
         if (esDomicilios === false) {
-          const bebida = obtenerBebida(PLATOS);
+          const bebida = obtenerBebida(platos);
           agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
         }
       });
 
-    const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(PLATOS) : undefined;
+    const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(platos) : undefined;
     agregarPlatoAOrden(listadoPlatos, platoAdicional, currentYear);
 
     if (esDomicilios === true && crearNumeroAleatorio(0, 1) === 1) {
-      const bebida = obtenerBebida(PLATOS);
+      const bebida = obtenerBebida(platos);
       agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
     }
 
@@ -182,14 +184,17 @@ module.exports = {
     const rangos = [];
 
     if (esDomicilios) {
+
       inicio = 1;
       final = Math.floor(numeroOrdenes / 100 * 90);
       rangos.push({ inicio, final, franja: 'MEDIO DIA', horas: [11, 12, 13] });
 
       inicio = final + 1;
       final = inicio + Math.floor(numeroOrdenes / 100 * 10);
-      rangos.push({ inicio, final, franja: 'TARDE', horas: [14, 15, 16, 17] });
+      rangos.push({ inicio, final, franja: 'TARDE', horas: [14, 15, 16] });
+
     } else {
+
       inicio = 1;
       final = Math.floor(numeroOrdenes / 100 * 75);
       rangos.push({ inicio, final, franja: 'MEDIO DIA', horas: [11, 12, 13] });
@@ -200,7 +205,8 @@ module.exports = {
 
       inicio = final + 1;
       final = inicio + Math.floor(numeroOrdenes / 100 * 10);
-      rangos.push({ inicio, final, franja: 'NOCHE', horas: [18, 19, 20] });
+      rangos.push({ inicio, final, franja: 'NOCHE', horas: [18, 19] });
+
     }
 
     return rangos;
@@ -266,11 +272,6 @@ module.exports = {
     return rangos.filter(rango => indice >= rango.inicio && indice <= rango.final)[0];
   },
 
-  obtenerCliente: Constantes => {
-    const { CLIENTES } = Constantes;
-    return obtenerItemAleatoriamente(CLIENTES);
-  },
-
   ordenar: (attr = '', order = 'asc') => {
 
     let greater = 1;
@@ -314,14 +315,18 @@ module.exports = {
   },
 
   crearTelefono: tipoCliente => {
-    if (tipoCliente === 'EMPRESA') {
+
+    if (tipoCliente === 'FIJO') {
       return crearTelefonoFijo();
+    } else if (tipoCliente === 'CELULAR') {
+      return crearTelefonoCelular();
     }
 
     return crearNumeroAleatorio(0, 1) ? crearTelefonoCelular() : crearTelefonoFijo();
   },
 
   crearDireccion: () => {
+
     const BARRIOS = [
       '14 De Octubre',
       '25 De Mayo',
@@ -372,6 +377,126 @@ module.exports = {
     }
 
     return direccion;
+  },
+
+  crearPersona: () => {
+
+    const NOMBRES_SINGULARES = [
+      'Alberto',
+      'Alexis',
+      'Andres',
+      'Carlos',
+      'Diego',
+      'Eduardo',
+      'Enrique',
+      'Esteban',
+      'Fernando',
+      'Jairo',
+      'Jorge',
+      'Juan',
+      'Julian',
+      'Mario',
+      'Mauricio',
+      'Orlando',
+      'Pablo',
+      'Ricardo',
+      'Roberto',
+      'Sebastian',
+    ];
+
+    const NOMBRES_COMPUESTOS = [
+      'Andres Esteban',
+      'Andres Fernando',
+      'Diego Fernando',
+      'Eduardo Luis',
+      'Ignacio Andres',
+      'Jaime Daniel',
+      'Jhon Jairo',
+      'Jorge Esteban',
+      'Juan Alberto',
+      'Juan Alfonso',
+      'Juan Diego',
+      'Juan Pablo',
+      'Juan Sebastian',
+      'Julian Andres',
+      'Luis Alejandro',
+      'Luis Esteban',
+      'Luis Fernando',
+      'Mauricio Andres',
+      'Ricardo Augusto',
+      'Roberto Antonio',
+    ];
+
+    const NOMBRES_MUJERES = [
+      'Alejandra',
+      'Alicia',
+      'Amanda',
+      'Ana',
+      'Angela',
+      'Astrid',
+      'Carolina',
+      'Catalina',
+      'Daniela',
+      'Diana',
+      'Dora',
+      'Estefania',
+      'Lina',
+      'Maria',
+      'Monica',
+      'Rosalba',
+      'Sofia',
+      'Stephany',
+      'Teresa',
+      'Yessica',
+    ];
+
+    const APELLIDOS = [
+      'Aguirre',
+      'Alvarez',
+      'Aristizabal',
+      'Cano',
+      'Florez',
+      'Gomez',
+      'Gutierrez',
+      'Henriquez',
+      'Hincapie',
+      'Jimenez',
+      'Lamprea',
+      'Lopera',
+      'Lopez',
+      'Mora',
+      'Noriega',
+      'Rayo',
+      'Rodriguez',
+      'Tabares',
+      'Torres',
+      'Zamora',
+    ];
+
+    const numeroAleatorio = crearNumeroAleatorio(0, 2);
+    let nombre;
+    let genero;
+
+    if (numeroAleatorio === 0) {
+      genero = 'FEMENINO';
+      nombre = obtenerItemAleatoriamente(NOMBRES_MUJERES);
+    } else if (numeroAleatorio === 1) {
+      genero = 'MASCULINO';
+      nombre = obtenerItemAleatoriamente(NOMBRES_SINGULARES);
+    } else if (numeroAleatorio === 2) {
+      genero = 'MASCULINO';
+      nombre = obtenerItemAleatoriamente(NOMBRES_COMPUESTOS);
+    }
+
+    return {
+      nombre: `${nombre} ${obtenerItemAleatoriamente(APELLIDOS)}`,
+      cedula: `10${crearCadenaAleatoria(8, 'numeros')}`,
+      genero,
+    };
+  },
+
+  esAnioBisiesto: (year) => {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   },
 
   /* eslint-disable */

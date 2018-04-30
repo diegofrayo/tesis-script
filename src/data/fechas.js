@@ -16,10 +16,10 @@ const obtenerSemena = dt => {
   return 1 + Math.ceil((firstThursday - tdt) / 604800000);
 };
 
-const fechas = [2017, 2018, 2019, 2020, 2021, 2022]
+const fechas = [2017, 2018, 2019, 2020, 2021]
   .map(year => {
     return Utils
-      .crearArreglo(365)
+      .crearArreglo(Utils.esAnioBisiesto(year) ? 366 : 365)
       .map(dia => {
         const fecha = Utils.crearFecha(year, dia);
         return {
@@ -33,5 +33,7 @@ const fechas = [2017, 2018, 2019, 2020, 2021, 2022]
   });
 
 module.exports = {
-  generar: () => [].concat(fechas[0]).concat(fechas[1]),
+  generar: () => fechas.reduce((acum, curr) => {
+    return acum.concat(curr);
+  }, []),
 };
