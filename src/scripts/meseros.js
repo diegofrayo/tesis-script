@@ -28,7 +28,7 @@ module.exports = {
           });
       });
 
-    archivoExcelMeseros.write(`./output/Meseros.xlsx`, err => {
+    archivoExcelMeseros.write(`./output/Meseros.xls`, err => {
       if (err) {
         console.error(err);
       } else {

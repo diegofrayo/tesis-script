@@ -16,7 +16,7 @@ const obtenerSemena = dt => {
   return 1 + Math.ceil((firstThursday - tdt) / 604800000);
 };
 
-const fechas = [2017, 2018, 2019, 2020, 2021]
+const fechas = [2017, 2018, 2019, 2020]
   .map(year => {
     return Utils
       .crearArreglo(Utils.esAnioBisiesto(year) ? 366 : 365)

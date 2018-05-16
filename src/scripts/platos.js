@@ -28,7 +28,7 @@ module.exports = {
           });
       });
 
-    archivoExcelPlatos.write(`./output/Platos.xlsx`, err => {
+    archivoExcelPlatos.write(`./output/Platos.xls`, err => {
       if (err) {
         console.error(err);
       } else {

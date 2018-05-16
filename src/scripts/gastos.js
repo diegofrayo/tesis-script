@@ -17,7 +17,7 @@ module.exports = {
         hojaDeExcelGastos.cell(1, indice + 1).string(value);
       });
 
-    archivoExcelGastos.write(`./output/Gastos.xlsx`, err => {
+    archivoExcelGastos.write(`./output/Gastos.xls`, err => {
       if (err) {
         console.error(err);
       } else {

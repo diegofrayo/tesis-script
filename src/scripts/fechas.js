@@ -27,7 +27,7 @@ module.exports = {
           });
       });
 
-    archivoExcelFechas.write(`./output/Fechas.xlsx`, err => {
+    archivoExcelFechas.write(`./output/Fechas.xls`, err => {
       if (err) {
         console.error(err);
       } else {

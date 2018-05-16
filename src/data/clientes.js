@@ -26,7 +26,7 @@ const clientes = Utils
     };
   })
   .reduce((acum, curr) => {
-    acum[curr.nombre] = curr;
+    acum[curr.nombre] = curr; // eslint-disable-line
     return acum;
   }, {});
 

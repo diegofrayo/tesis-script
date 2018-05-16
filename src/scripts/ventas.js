@@ -3,20 +3,6 @@ const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4n
 const Constantes = require('./../data/constantes');
 const Utils = require('./../utils');
 
-const guardarArchivo = (archivoExcel, nombreArchivo) => {
-  return new Promise((resolve, reject) => {
-    archivoExcel.write(nombreArchivo, err => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        console.log(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
-        resolve(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
-      }
-    });
-  });
-};
-
 module.exports = {
 
   ejecutar: configuracionScript => {
@@ -41,154 +27,181 @@ module.exports = {
       };
     }
 
-    console.log(`Creando archivo [${configuracion.directorioArchivos}]...`, new Date());
+    console.log(`Creando archivos [${configuracion.directorioArchivos}]...`, new Date());
 
     let ordenId = 1000;
     let numeroTotalPlatos = 0;
 
-    Constantes
+    let archivoExcel;
+    let hojaDeExcel;
+    let numeroArchivosExcel = 0;
+    let hojaDeExcelActualFila = 2;
+
+    const configurarArchivoExcel = columnas => {
+      numeroArchivosExcel += 1;
+      archivoExcel = new xl.Workbook();
+      hojaDeExcel = archivoExcel.addWorksheet('Hoja 1');
+      Object
+        .values(columnas)
+        .forEach((value, indice) => {
+          hojaDeExcel.cell(1, indice + 1).string(value);
+        });
+    };
+
+    const guardarArchivo = (nombreArchivo, columnas) => {
+      return new Promise(resolve => {
+        archivoExcel.write(nombreArchivo, err => {
+          if (err) {
+            console.error(err);
+            resolve(err);
+          } else {
+            console.log(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
+            resolve(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
+          }
+          configurarArchivoExcel(columnas);
+        });
+      });
+    };
+
+    const fechas = Constantes
       .YEARS
-      .forEach(year => {
+      .map(year => {
+        return Utils
+          .crearArreglo(year === new Date().getFullYear() ? 119 : 365)
+          .map(indice => ({ fecha: Utils.crearFecha(year, indice), year }));
+      })
+      .reduce((acum, curr) => {
+        return acum.concat(curr);
+      }, []);
 
-        const fechasAgrupadasPorMes = Object.values(
-          Utils
-            .crearArreglo(year === new Date().getFullYear() ? 119 : 365)
-            .map(indice => Utils.crearFecha(year, indice))
-            .reduce((acum, fecha) => {
-              const mes = fecha.getMonth();
-              let fechas = acum[mes];
-              if (fechas === undefined) {
-                acum[mes] = [];
-                fechas = acum[mes];
-              }
-              fechas.push(fecha);
-              return acum;
-            }, {}),
-        );
+    configurarArchivoExcel(configuracion.columnas);
 
-        const generarDatos = (arrayEntero, mesesIndice) => {
-          return fechas => {
+    const generarDatos = (fechasArreglo, fechaIndice) => {
 
-            const archivoExcel = new xl.Workbook();
+      return ({ fecha, year }) => {
 
-            fechas.forEach(fecha => {
+        let numeroOrdenes = 0;
 
-              const hojaDeExcel = archivoExcel.addWorksheet(fecha.getDate());
-              Object
-                .values(configuracion.columnas)
-                .forEach((value, indice) => {
-                  hojaDeExcel.cell(1, indice + 1).string(value);
-                });
+        if (Utils.esFinDeSemana(fecha)) {
+          numeroOrdenes = Utils.crearNumeroAleatorio(...configuracion.rangoNumerosDeOrdenFinDeSemana);
+        } else {
+          numeroOrdenes = Utils.crearNumeroAleatorio(...configuracion.rangoNumerosDeOrdenNormal);
+        }
 
-              let hojaDeExcelActualFila = 2;
-              let numeroOrdenes = 0;
+        const rangosHorarios = Utils.calcularRangosHorarios(numeroOrdenes, configuracion.esDomicilios);
+        const rangosTipoCliente = Utils.calcularRangosTipoCliente(numeroOrdenes, configuracion.esDomicilios);
 
-              if (Utils.esFinDeSemana(fecha)) {
-                numeroOrdenes = Utils.crearNumeroAleatorio(...configuracion.rangoNumerosDeOrdenFinDeSemana);
+        const ordenes = Utils
+          .crearArreglo(numeroOrdenes)
+          .map(ordenIndice => {
+
+            const rangoHorario = Utils.obtenerRangoHorario(rangosHorarios, ordenIndice);
+            const horaTomaOrden = Utils.crearHora(rangoHorario.horas, Constantes.MINUTOS);
+            const horaFactura = Utils.crearHoraFacturacion(horaTomaOrden);
+            const tipoCliente = Utils.obtenerTipoCliente(rangosTipoCliente, ordenIndice);
+
+            const numeroPersonas = Utils.obtenerNumeroPersonas(tipoCliente, rangoHorario.franja);
+            let platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes.PLATOS, configuracion.esDomicilios);
+            const valorTotal = platos.reduce((acum, curr) => {
+              return acum + (curr.precio * curr.unidades);
+            }, 0);
+
+            let orden;
+            let persona;
+
+            if (!configuracion.esDomicilios) {
+              persona = Utils.obtenerItemAleatoriamente(Constantes.MESEROS);
+              orden = {
+                fecha: Utils.formatearFecha(fecha),
+                hora_toma_orden: horaTomaOrden,
+                hora_factura: horaFactura,
+                numero_mesa: Utils.obtenerItemAleatoriamente(Constantes.MESAS),
+              };
+            } else {
+              persona = Utils.obtenerItemAleatoriamente(Constantes.CLIENTES);
+              orden = {
+                fecha: Utils.formatearFecha(fecha),
+                hora_toma_orden: horaTomaOrden,
+                hora_factura: horaFactura,
+              };
+            }
+
+            platos = platos.map(plato => {
+
+              const fila = {
+                ...orden,
+                codigo_plato: plato.id,
+                plato: plato.nombre,
+                precio: plato.precio,
+                unidades: plato.unidades,
+                valor_total: valorTotal,
+              };
+
+              if (configuracion.esDomicilios) {
+                fila.identificador_cliente = persona.id;
+                fila.nombre_cliente = persona.nombre;
               } else {
-                numeroOrdenes = Utils.crearNumeroAleatorio(...configuracion.rangoNumerosDeOrdenNormal);
+                fila.identificador_mesero = persona.id;
+                fila.nombre_mesero = persona.nombre;
               }
 
-              const rangosHorarios = Utils.calcularRangosHorarios(numeroOrdenes, configuracion.esDomicilios);
-              const rangosTipoCliente = Utils.calcularRangosTipoCliente(numeroOrdenes, configuracion.esDomicilios);
-
-              const ordenes = Utils
-                .crearArreglo(numeroOrdenes)
-                .map(ordenIndice => {
-
-                  const rangoHorario = Utils.obtenerRangoHorario(rangosHorarios, ordenIndice);
-                  const horaTomaOrden = Utils.crearHora(rangoHorario.horas, Constantes.MINUTOS);
-                  const horaFactura = Utils.crearHoraFacturacion(horaTomaOrden);
-                  const tipoCliente = Utils.obtenerTipoCliente(rangosTipoCliente, ordenIndice);
-
-                  const numeroPersonas = Utils.obtenerNumeroPersonas(tipoCliente, rangoHorario.franja);
-                  let platos = Utils.obtenerListadoDePlatos(numeroPersonas, year, rangoHorario.franja, Constantes.PLATOS, configuracion.esDomicilios);
-                  const valorTotal = platos.reduce((acum, curr) => {
-                    acum += curr.precio * curr.unidades;
-                    return acum;
-                  }, 0);
-
-                  let orden;
-                  let persona;
-
-                  if (!configuracion.esDomicilios) {
-                    persona = Utils.obtenerItemAleatoriamente(Constantes.MESEROS);
-                    orden = {
-                      fecha: Utils.formatearFecha(fecha),
-                      hora_toma_orden: horaTomaOrden,
-                      hora_factura: horaFactura,
-                      numero_mesa: Utils.obtenerItemAleatoriamente(Constantes.MESAS),
-                    };
-                  } else {
-                    persona = Utils.obtenerItemAleatoriamente(Constantes.CLIENTES);
-                    orden = {
-                      fecha: Utils.formatearFecha(fecha),
-                      hora_toma_orden: horaTomaOrden,
-                      hora_factura: horaFactura,
-                    };
-                  }
-
-                  platos = platos.map(plato => {
-
-                    const fila = {
-                      ...orden,
-                      codigo_plato: plato.id,
-                      plato: plato.nombre,
-                      precio: plato.precio,
-                      unidades: plato.unidades,
-                      valor_total: valorTotal,
-                    };
-
-                    if (configuracion.esDomicilios) {
-                      fila.identificador_cliente = persona.id;
-                      fila.nombre_cliente = persona.nombre;
-                    } else {
-                      fila.identificador_mesero = persona.id;
-                      fila.nombre_mesero = persona.nombre;
-                    }
-
-                    return fila;
-                  });
-
-                  numeroTotalPlatos += platos.length;
-
-                  return {
-                    hora_toma_orden: horaTomaOrden,
-                    platos,
-                  };
-                });
-
-                ordenes.sort(Utils.ordenar('hora_toma_orden', 'asc'));
-
-                ordenes.forEach((orden, ordenIndice) => {
-                  orden.platos.forEach((plato) => {
-                    hojaDeExcel.cell(hojaDeExcelActualFila, 1).number(ordenId + ordenIndice + 1);
-                    Object
-                      .values(plato)
-                      .forEach((value, indice) => {
-                        hojaDeExcel.cell(hojaDeExcelActualFila, indice + 2)[typeof value](value);
-                      });
-                    hojaDeExcelActualFila += 1;
-                  });
-                });
-
-                ordenId += numeroOrdenes;
+              return fila;
             });
 
-            return guardarArchivo(
-              archivoExcel,
-              `./output/${configuracion.directorioArchivos}/${year}/${mesesIndice + 1}. ${
-                Constantes.MESES[mesesIndice]
-              }.xlsx`,
-            );
-          };
-        };
+            numeroTotalPlatos += platos.length;
 
-        Utils
-          .batchPromises(1, fechasAgrupadasPorMes, true, generarDatos)
-          .then(() => console.log(`Numero total de ordenes: ${ordenId - 1000} | Numero total de platos: ${numeroTotalPlatos}`))
-          .catch(console.error);
-    });
+            return {
+              hora_toma_orden: horaTomaOrden,
+              platos,
+            };
+          });
+
+          ordenes.sort(Utils.ordenar('hora_toma_orden', 'asc'));
+
+          ordenes.forEach((orden, ordenIndice) => {
+            orden.platos.forEach((plato) => {
+              hojaDeExcel.cell(hojaDeExcelActualFila, 1).number(ordenId + ordenIndice + 1);
+              Object
+                .values(plato)
+                .forEach((value, indice) => {
+                  hojaDeExcel.cell(hojaDeExcelActualFila, indice + 2)[typeof value](value);
+                });
+              hojaDeExcelActualFila += 1;
+            });
+          });
+
+          ordenId += numeroOrdenes;
+
+          if (hojaDeExcelActualFila >= 45000) {
+
+            hojaDeExcelActualFila = 2;
+
+            return guardarArchivo(
+              `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xls`,
+              configuracion.columnas,
+            );
+
+          }
+
+          if (fechasArreglo.length - 1 === fechaIndice) {
+
+            hojaDeExcelActualFila = 2;
+
+            return guardarArchivo(
+                `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xls`,
+                  configuracion.columnas,
+              );
+
+          }
+
+          return Promise.resolve();
+      };
+    };
+
+    Utils
+      .batchPromises(1, fechas, true, generarDatos)
+      .then(() => console.log(`Numero total de ordenes: ${ordenId - 1000} | Numero total de platos: ${numeroTotalPlatos}`))
+      .catch(console.error);
 
   },
 

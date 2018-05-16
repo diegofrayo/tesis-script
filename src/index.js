@@ -10,6 +10,7 @@ const VentasScript = require('./scripts/ventas');
 switch (argv.area) {
 
   case 'domicilios':
+    ClientesScript.ejecutar();
     VentasScript.ejecutar('domicilios');
     break;
 
@@ -34,6 +35,7 @@ switch (argv.area) {
     break;
 
   default:
+    MeserosScript.ejecutar();
     VentasScript.ejecutar();
     break;
 
