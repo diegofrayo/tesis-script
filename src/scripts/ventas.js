@@ -97,7 +97,6 @@ module.exports = {
 
             const rangoHorario = Utils.obtenerRangoHorario(rangosHorarios, ordenIndice);
             const horaTomaOrden = Utils.crearHora(rangoHorario.horas, Constantes.MINUTOS);
-            const horaFactura = Utils.crearHoraFacturacion(horaTomaOrden);
             const tipoCliente = Utils.obtenerTipoCliente(rangosTipoCliente, ordenIndice);
 
             const numeroPersonas = Utils.obtenerNumeroPersonas(tipoCliente, rangoHorario.franja);
@@ -114,7 +113,7 @@ module.exports = {
               orden = {
                 fecha: Utils.formatearFecha(fecha),
                 hora_toma_orden: horaTomaOrden,
-                hora_factura: horaFactura,
+                hora_factura: Utils.crearHoraFacturacion(horaTomaOrden),
                 numero_mesa: Utils.obtenerItemAleatoriamente(Constantes.MESAS),
               };
             } else {
@@ -122,7 +121,6 @@ module.exports = {
               orden = {
                 fecha: Utils.formatearFecha(fecha),
                 hora_toma_orden: horaTomaOrden,
-                hora_factura: horaFactura,
               };
             }
 

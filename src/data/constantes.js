@@ -2,6 +2,7 @@ const Clientes = require('./clientes');
 const Fechas = require('./fechas');
 const Meseros = require('./meseros');
 const Platos = require('./platos');
+const Tiempo = require('./tiempo');
 const Utils = require('./../utils');
 
 module.exports = {
@@ -43,10 +44,9 @@ module.exports = {
   ],
 
   COLUMNAS_VENTAS_DOMICILIOS: [
-    'NUMERO DE FACTURA',
+    'NUMERO FACTURA',
     'FECHA',
-    'HORA TOMA ORDEN',
-    'HORA FACTURACION',
+    'HORA TOMA PEDIDO',
     'CODIGO PLATO',
     'NOMBRE PLATO',
     'PRECIO PLATO',
@@ -72,11 +72,15 @@ module.exports = {
 
   COLUMNAS_FECHAS: ['FECHA', 'DIA', 'SEMANA', 'MES', 'AÑO'],
 
+  COLUMNAS_TIEMPO: ['TIEMPO', 'HORA', 'MINUTOS', 'FRANJA HORARIA'],
+
   COLUMNAS_PLATOS: ['CODIGO', 'NOMBRE', 'CATEGORIA'],
 
   PLATOS: Platos.generar(),
 
   FECHAS: Fechas.generar(),
+
+  TIEMPO: Tiempo.generar(),
 
   MESEROS: Meseros.generar(),
 

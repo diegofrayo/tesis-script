@@ -191,7 +191,7 @@ module.exports = {
 
       inicio = final + 1;
       final = inicio + Math.floor(numeroOrdenes / 100 * 10);
-      rangos.push({ inicio, final, franja: 'TARDE', horas: [14, 15, 16] });
+      rangos.push({ inicio, final, franja: 'TARDE', horas: [14, 15, 16, 17] });
 
     } else {
 

@@ -3,3 +3,4 @@ output/
 *.log
 .DS_Store
 package-lock.json
+excel-examples.js

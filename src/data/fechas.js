@@ -1,6 +1,6 @@
 const Utils = require('./../utils');
 
-const obtenerSemena = dt => {
+const obtenerSemana = dt => {
 
   const tdt = new Date(dt.valueOf());
   const dayn = (dt.getDay() + 6) % 7;
@@ -25,7 +25,7 @@ const fechas = [2017, 2018, 2019, 2020]
         return {
           fecha: Utils.formatearFecha(fecha),
           dia: fecha.getDate(),
-          semana: obtenerSemena(fecha),
+          semana: obtenerSemana(fecha),
           mes: fecha.getMonth() + 1,
           year: fecha.getFullYear(),
         };
@@ -33,7 +33,8 @@ const fechas = [2017, 2018, 2019, 2020]
   });
 
 module.exports = {
-  generar: () => fechas.reduce((acum, curr) => {
-    return acum.concat(curr);
-  }, []),
+  generar: () =>
+    fechas.reduce((acum, curr) => {
+      return acum.concat(curr);
+    }, []),
 };

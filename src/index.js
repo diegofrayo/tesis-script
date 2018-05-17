@@ -5,6 +5,7 @@ const FechasScript = require('./scripts/fechas');
 const GastosScript = require('./scripts/gastos');
 const MeserosScript = require('./scripts/meseros');
 const PlatosScript = require('./scripts/platos');
+const TiempoScript = require('./scripts/tiempo');
 const VentasScript = require('./scripts/ventas');
 
 switch (argv.area) {
@@ -21,6 +22,10 @@ switch (argv.area) {
 
   case 'fechas':
     FechasScript.ejecutar();
+    break;
+
+  case 'tiempo':
+    TiempoScript.ejecutar();
     break;
 
   case 'platos':
