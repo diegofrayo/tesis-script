@@ -40,7 +40,7 @@ module.exports = {
     const configurarArchivoExcel = columnas => {
       numeroArchivosExcel += 1;
       archivoExcel = new xl.Workbook();
-      hojaDeExcel = archivoExcel.addWorksheet('Hoja 1');
+      hojaDeExcel = archivoExcel.addWorksheet('Ventas');
       Object
         .values(columnas)
         .forEach((value, indice) => {
@@ -177,7 +177,7 @@ module.exports = {
             hojaDeExcelActualFila = 2;
 
             return guardarArchivo(
-              `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xls`,
+              `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xlsx`,
               configuracion.columnas,
             );
 
@@ -188,7 +188,7 @@ module.exports = {
             hojaDeExcelActualFila = 2;
 
             return guardarArchivo(
-                `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xls`,
+                `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xlsx`,
                   configuracion.columnas,
               );
 

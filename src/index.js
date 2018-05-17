@@ -11,6 +11,7 @@ switch (argv.area) {
 
   case 'domicilios':
     ClientesScript.ejecutar();
+    PlatosScript.ejecutar();
     VentasScript.ejecutar('domicilios');
     break;
 
@@ -36,6 +37,7 @@ switch (argv.area) {
 
   default:
     MeserosScript.ejecutar();
+    PlatosScript.ejecutar();
     VentasScript.ejecutar();
     break;
 

@@ -27,7 +27,7 @@ module.exports = {
           });
       });
 
-    archivoExcelClientes.write(`./output/Clientes.xls`, err => {
+    archivoExcelClientes.write(`./output/Clientes.xlsx`, err => {
       if (err) {
         console.error(err);
       } else {
