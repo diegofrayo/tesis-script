@@ -40,10 +40,18 @@ switch (argv.area) {
     GastosScript.ejecutar();
     break;
 
+  case 'all':
+    ClientesScript.ejecutar();
+    MeserosScript.ejecutar();
+    FechasScript.ejecutar();
+    TiempoScript.ejecutar();
+    PlatosScript.ejecutar();
+    break;
+
   default:
     MeserosScript.ejecutar();
     PlatosScript.ejecutar();
-    VentasScript.ejecutar();
+    VentasScript.ejecutar('restaurante');
     break;
 
 }

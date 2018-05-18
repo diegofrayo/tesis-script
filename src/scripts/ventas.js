@@ -1,4 +1,5 @@
 const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
+const fs = require('fs');
 
 const Constantes = require('./../data/constantes');
 const Utils = require('./../utils');
@@ -26,6 +27,9 @@ module.exports = {
         columnas: Constantes.COLUMNAS_VENTAS_RESTAURANTE,
       };
     }
+
+    const dir = `./output/${configuracion.directorioArchivos}`;
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
     console.log(`Creando archivos [${configuracion.directorioArchivos}]...`, new Date());
 

@@ -1,4 +1,5 @@
 const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
+const fs = require('fs');
 
 const Constantes = require('./../data/constantes');
 
@@ -16,6 +17,8 @@ module.exports = {
       .forEach((value, indice) => {
         hojaDeExcelMeseros.cell(1, indice + 1).string(value);
       });
+
+    fs.writeFile('./output/Meseros.json', JSON.stringify(Constantes.MESEROS), () => {});
 
     Constantes
       .MESEROS

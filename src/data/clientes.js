@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const Utils = require('./../utils');
 
 const clientes = Utils
@@ -31,5 +33,10 @@ const clientes = Utils
   }, {});
 
 module.exports = {
-  generar: () => Object.values(clientes).sort(Utils.ordenar('nombre', 'asc')),
+  generar: () => {
+    if (fs.existsSync('./output/Clientes.json')) {
+      return JSON.parse(fs.readFileSync('./output/Clientes.json', 'utf8'));
+    }
+    return Object.values(clientes).sort(Utils.ordenar('nombre', 'asc'));
+  },
 };

@@ -25,6 +25,7 @@
     "url": "git+https://github.com/diegofrayo/tesis-script.git"
   },
   "scripts": {
+    "clean": "rm -r ./output",
     "start": "cross-env NODE_ENV=development node src/index.js",
     "start-clientes": "cross-env NODE_ENV=development node src/index.js --area=clientes",
     "start-domicilios": "cross-env NODE_ENV=development node src/index.js --area=domicilios",
@@ -34,6 +35,7 @@
     "start-meseros": "cross-env NODE_ENV=development node src/index.js --area=meseros",
     "start-platos": "cross-env NODE_ENV=development node src/index.js --area=platos",
     "start-restaurante": "cross-env NODE_ENV=development node src/index.js --area=restaurante",
+    "start-all": "cross-env NODE_ENV=development node src/index.js --area=all",
     "lint": "esw -w -c .eslintrc src/**/*.js"
   },
   "devDependencies": {

@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const Utils = require('./../utils');
 
 const meseros = Utils
@@ -18,5 +20,10 @@ const meseros = Utils
   }, {});
 
 module.exports = {
-  generar: () => Object.values(meseros).sort(Utils.ordenar('codigo', 'asc')),
+  generar: () => {
+    if (fs.existsSync('./output/Meseros.json')) {
+      return JSON.parse(fs.readFileSync('./output/Meseros.json', 'utf8'));
+    }
+    return Object.values(meseros).sort(Utils.ordenar('codigo', 'asc'));
+  },
 };
