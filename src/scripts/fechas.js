@@ -1,5 +1,4 @@
-const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
-
+const Excel = require('./../excel');
 const Constantes = require('./../data/constantes');
 
 module.exports = {
@@ -8,14 +7,12 @@ module.exports = {
 
     console.log('Creando archivo con el listado de fechas...', new Date());
 
-    const archivoExcelFechas = new xl.Workbook();
-    const hojaDeExcelFechas = archivoExcelFechas.addWorksheet('Fechas');
+    const archivoExcelFechas = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/Fechas.xls`);
+    const hojaDeExcelFechas = Excel.agregarHoja(archivoExcelFechas, 'Fechas');
 
     Object
       .values(Constantes.COLUMNAS_FECHAS)
-      .forEach((value, indice) => {
-        hojaDeExcelFechas.cell(1, indice + 1).string(value);
-      });
+      .forEach((value, indice) => Excel.escribirCelda(hojaDeExcelFechas, 0, indice, value));
 
     Constantes
       .FECHAS
@@ -23,17 +20,14 @@ module.exports = {
         Object
           .values(fecha)
           .forEach((value, indice) => {
-            hojaDeExcelFechas.cell(fechaIndice + 2, indice + 1)[typeof value](value);
+            Excel.escribirCelda(hojaDeExcelFechas, fechaIndice + 1, indice, value)
           });
       });
 
-    archivoExcelFechas.write(`./output/Fechas.xlsx`, err => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Archivo creado correctamente', new Date());
-      }
-    });
+    Excel
+      .guardarArchivo(archivoExcelFechas)
+      .then(() => console.log('Archivo creado correctamente', new Date()))
+      .catch(console.log);
 
   },
 

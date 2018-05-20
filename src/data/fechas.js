@@ -1,20 +1,21 @@
 const Utils = require('./../utils');
 
-const obtenerSemana = dt => {
+const MESES = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
 
-  const tdt = new Date(dt.valueOf());
-  const dayn = (dt.getDay() + 6) % 7;
-  tdt.setDate(tdt.getDate() - dayn + 3);
-
-  const firstThursday = tdt.valueOf();
-  tdt.setMonth(0, 1);
-
-  if (tdt.getDay() !== 4) {
-    tdt.setMonth(0, 1 + (4 - tdt.getDay() + 7) % 7);
-  }
-
-  return 1 + Math.ceil((firstThursday - tdt) / 604800000);
-};
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
 const fechas = [2017, 2018, 2019, 2020]
   .map(year => {
@@ -22,12 +23,14 @@ const fechas = [2017, 2018, 2019, 2020]
       .crearArreglo(Utils.esAnioBisiesto(year) ? 366 : 365)
       .map(dia => {
         const fecha = Utils.crearFecha(year, dia);
+        const mes = fecha.getMonth();
         return {
           fecha: Utils.formatearFecha(fecha),
           dia: fecha.getDate(),
-          semana: obtenerSemana(fecha),
-          mes: fecha.getMonth() + 1,
+          mes: mes + 1,
           year: fecha.getFullYear(),
+          nombre_mes: MESES[mes],
+          nombre_dia: DIAS[fecha.getDay()],
         };
       });
   });

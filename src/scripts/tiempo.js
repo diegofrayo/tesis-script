@@ -1,39 +1,33 @@
-const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
-
+const Excel = require('./../excel');
 const Constantes = require('./../data/constantes');
 
 module.exports = {
 
   ejecutar: () => {
 
-    console.log('Creando archivo con el listado de tiempo...', new Date());
+    console.log('Creando archivo con el listado de tiempos...', new Date());
 
-    const archivoExcelTiempo = new xl.Workbook();
-    const hojaDeExcelTiempo = archivoExcelTiempo.addWorksheet('Tiempo');
+    const archivoExcelTiempo = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/Tiempo.xls`);
+    const hojaDeExcelTiempo = Excel.agregarHoja(archivoExcelTiempo, 'Tiempo');
 
     Object
       .values(Constantes.COLUMNAS_TIEMPO)
-      .forEach((value, indice) => {
-        hojaDeExcelTiempo.cell(1, indice + 1).string(value);
-      });
+      .forEach((value, indice) => Excel.escribirCelda(hojaDeExcelTiempo, 0, indice, value));
 
     Constantes
       .TIEMPO
-      .forEach((fecha, fechaIndice) => {
+      .forEach((tiempo, tiempoIndice) => {
         Object
-          .values(fecha)
+          .values(tiempo)
           .forEach((value, indice) => {
-            hojaDeExcelTiempo.cell(fechaIndice + 2, indice + 1)[typeof value](value);
+            Excel.escribirCelda(hojaDeExcelTiempo, tiempoIndice + 1, indice, value)
           });
       });
 
-    archivoExcelTiempo.write(`./output/Tiempo.xlsx`, err => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Archivo creado correctamente', new Date());
-      }
-    });
+    Excel
+      .guardarArchivo(archivoExcelTiempo)
+      .then(() => console.log('Archivo creado correctamente', new Date()))
+      .catch(console.log);
 
   },
 

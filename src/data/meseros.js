@@ -21,8 +21,9 @@ const meseros = Utils
 
 module.exports = {
   generar: () => {
-    if (fs.existsSync('./output/Meseros.json')) {
-      return JSON.parse(fs.readFileSync('./output/Meseros.json', 'utf8'));
+    const rutaArchivo = '/Users/diegofrayo/Documents/Carpeta-Compartida/Fuentes/Meseros.json';
+    if (fs.existsSync(rutaArchivo)) {
+      return JSON.parse(fs.readFileSync(rutaArchivo, 'utf8'));
     }
     return Object.values(meseros).sort(Utils.ordenar('codigo', 'asc'));
   },

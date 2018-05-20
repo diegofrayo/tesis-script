@@ -25,7 +25,6 @@
     "url": "git+https://github.com/diegofrayo/tesis-script.git"
   },
   "scripts": {
-    "clean": "rm -r ./output",
     "start": "cross-env NODE_ENV=development node src/index.js",
     "start-clientes": "cross-env NODE_ENV=development node src/index.js --area=clientes",
     "start-domicilios": "cross-env NODE_ENV=development node src/index.js --area=domicilios",
@@ -48,7 +47,7 @@
     "eslint-watch": "^3.1.4"
   },
   "dependencies": {
-    "excel4node": "^1.3.6",
+    "xlgen": "^0.2.3-1",
     "yargs": "^11.0.0"
   },
   "engines": {

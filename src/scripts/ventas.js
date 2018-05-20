@@ -1,6 +1,6 @@
-const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
 const fs = require('fs');
 
+const Excel = require('./../excel');
 const Constantes = require('./../data/constantes');
 const Utils = require('./../utils');
 
@@ -28,7 +28,7 @@ module.exports = {
       };
     }
 
-    const dir = `./output/${configuracion.directorioArchivos}`;
+    const dir = `${Constantes.CARPETA_SALIDA}/${configuracion.directorioArchivos}`;
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
     console.log(`Creando archivos [${configuracion.directorioArchivos}]...`, new Date());
@@ -39,32 +39,29 @@ module.exports = {
     let archivoExcel;
     let hojaDeExcel;
     let numeroArchivosExcel = 0;
-    let hojaDeExcelActualFila = 2;
+    let hojaDeExcelActualFila = 1;
 
-    const configurarArchivoExcel = columnas => {
+    const configurarArchivoExcel = () => {
+
       numeroArchivosExcel += 1;
-      archivoExcel = new xl.Workbook();
-      hojaDeExcel = archivoExcel.addWorksheet('Ventas');
+      hojaDeExcelActualFila = 1;
+
+      archivoExcel = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xls`);
+      hojaDeExcel = Excel.agregarHoja(archivoExcel, 'Ventas');
+
       Object
-        .values(columnas)
-        .forEach((value, indice) => {
-          hojaDeExcel.cell(1, indice + 1).string(value);
-        });
+        .values(configuracion.columnas)
+        .forEach((value, indice) => Excel.escribirCelda(hojaDeExcel, 0, indice, value));
     };
 
-    const guardarArchivo = (nombreArchivo, columnas) => {
-      return new Promise(resolve => {
-        archivoExcel.write(nombreArchivo, err => {
-          if (err) {
-            console.error(err);
-            resolve(err);
-          } else {
-            console.log(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
-            resolve(`Archivo creado correctamente: ${nombreArchivo} | ${new Date()}`);
-          }
-          configurarArchivoExcel(columnas);
+    const guardarArchivo = () => {
+      return Excel
+        .guardarArchivo(archivoExcel)
+        .then(() => {
+          console.log(`Archivo ${numeroArchivosExcel} creado correctamente | ${new Date()}`);
+          configurarArchivoExcel();
+          return true;
         });
-      });
     };
 
     const fechas = Constantes
@@ -78,7 +75,7 @@ module.exports = {
         return acum.concat(curr);
       }, []);
 
-    configurarArchivoExcel(configuracion.columnas);
+    configurarArchivoExcel();
 
     const generarDatos = (fechasArreglo, fechaIndice) => {
 
@@ -162,11 +159,11 @@ module.exports = {
 
           ordenes.forEach((orden, ordenIndice) => {
             orden.platos.forEach((plato) => {
-              hojaDeExcel.cell(hojaDeExcelActualFila, 1).number(ordenId + ordenIndice + 1);
+              Excel.escribirCelda(hojaDeExcel, hojaDeExcelActualFila, 0, ordenId + ordenIndice + 1);
               Object
                 .values(plato)
                 .forEach((value, indice) => {
-                  hojaDeExcel.cell(hojaDeExcelActualFila, indice + 2)[typeof value](value);
+                  Excel.escribirCelda(hojaDeExcel, hojaDeExcelActualFila, indice + 1, value);
                 });
               hojaDeExcelActualFila += 1;
             });
@@ -174,26 +171,8 @@ module.exports = {
 
           ordenId += numeroOrdenes;
 
-          if (hojaDeExcelActualFila >= 45000) {
-
-            hojaDeExcelActualFila = 2;
-
-            return guardarArchivo(
-              `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xlsx`,
-              configuracion.columnas,
-            );
-
-          }
-
-          if (fechasArreglo.length - 1 === fechaIndice) {
-
-            hojaDeExcelActualFila = 2;
-
-            return guardarArchivo(
-                `./output/${configuracion.directorioArchivos}/${configuracion.directorioArchivos} ${numeroArchivosExcel}.xlsx`,
-                  configuracion.columnas,
-              );
-
+          if (hojaDeExcelActualFila >= 35000 || fechasArreglo.length - 1 === fechaIndice) {
+            return guardarArchivo();
           }
 
           return Promise.resolve();
@@ -203,7 +182,7 @@ module.exports = {
     Utils
       .batchPromises(1, fechas, true, generarDatos)
       .then(() => console.log(`Numero total de ordenes: ${ordenId - 1000} | Numero total de platos: ${numeroTotalPlatos}`))
-      .catch(console.error);
+      .catch(console.log);
 
   },
 

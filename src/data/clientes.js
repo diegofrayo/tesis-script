@@ -34,8 +34,9 @@ const clientes = Utils
 
 module.exports = {
   generar: () => {
-    if (fs.existsSync('./output/Clientes.json')) {
-      return JSON.parse(fs.readFileSync('./output/Clientes.json', 'utf8'));
+    const rutaArchivo = '/Users/diegofrayo/Documents/Carpeta-Compartida/Fuentes/Clientes.json';
+    if (fs.existsSync(rutaArchivo)) {
+      return JSON.parse(fs.readFileSync(rutaArchivo, 'utf8'));
     }
     return Object.values(clientes).sort(Utils.ordenar('nombre', 'asc'));
   },

@@ -1,6 +1,6 @@
-const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
 const fs = require('fs');
 
+const Excel = require('./../excel');
 const Constantes = require('./../data/constantes');
 
 module.exports = {
@@ -9,16 +9,14 @@ module.exports = {
 
     console.log('Creando archivo con el listado de clientes...', new Date());
 
-    const archivoExcelClientes = new xl.Workbook();
-    const hojaDeExcelClientes = archivoExcelClientes.addWorksheet('Clientes');
+    const archivoExcelClientes = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/Clientes.xls`);
+    const hojaDeExcelClientes = Excel.agregarHoja(archivoExcelClientes, 'Clientes');
+
+    fs.writeFile(`${Constantes.CARPETA_SALIDA}/Clientes.json`, JSON.stringify(Constantes.CLIENTES), () => {});
 
     Object
       .values(Constantes.COLUMNAS_CLIENTES)
-      .forEach((value, indice) => {
-        hojaDeExcelClientes.cell(1, indice + 1).string(value);
-      });
-
-    fs.writeFile('./output/Clientes.json', JSON.stringify(Constantes.CLIENTES), () => {});
+      .forEach((value, indice) => Excel.escribirCelda(hojaDeExcelClientes, 0, indice, value));
 
     Constantes
       .CLIENTES
@@ -26,17 +24,14 @@ module.exports = {
         Object
           .values(cliente)
           .forEach((value, indice) => {
-            hojaDeExcelClientes.cell(clienteIndice + 2, indice + 1)[typeof value](value);
+            Excel.escribirCelda(hojaDeExcelClientes, clienteIndice + 1, indice, value)
           });
       });
 
-    archivoExcelClientes.write(`./output/Clientes.xlsx`, err => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Archivo creado correctamente', new Date());
-      }
-    });
+    Excel
+      .guardarArchivo(archivoExcelClientes)
+      .then(() => console.log('Archivo creado correctamente', new Date()))
+      .catch(console.log);
 
   },
 

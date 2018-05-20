@@ -1,6 +1,6 @@
-const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
 const fs = require('fs');
 
+const Excel = require('./../excel');
 const Constantes = require('./../data/constantes');
 
 module.exports = {
@@ -9,35 +9,29 @@ module.exports = {
 
     console.log('Creando archivo con el listado de meseros...', new Date());
 
-    const archivoExcelMeseros = new xl.Workbook();
-    const hojaDeExcelMeseros = archivoExcelMeseros.addWorksheet('Meseros');
+    const archivoExcelMeseros = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/Meseros.xls`);
+    const hojaDeExcelMeseros = Excel.agregarHoja(archivoExcelMeseros, 'Meseros');
+
+    fs.writeFile(`${Constantes.CARPETA_SALIDA}/Meseros.json`, JSON.stringify(Constantes.MESEROS), () => {});
 
     Object
       .values(Constantes.COLUMNAS_MESEROS)
-      .forEach((value, indice) => {
-        hojaDeExcelMeseros.cell(1, indice + 1).string(value);
-      });
-
-    fs.writeFile('./output/Meseros.json', JSON.stringify(Constantes.MESEROS), () => {});
+      .forEach((value, indice) => Excel.escribirCelda(hojaDeExcelMeseros, 0, indice, value));
 
     Constantes
       .MESEROS
-      .forEach((plato, platoIndice) => {
+      .forEach((mesero, meseroIndice) => {
         Object
-          .values(plato)
+          .values(mesero)
           .forEach((value, indice) => {
-            if (typeof value === 'object') return;
-            hojaDeExcelMeseros.cell(platoIndice + 2, indice + 1)[typeof value](value);
+            Excel.escribirCelda(hojaDeExcelMeseros, meseroIndice + 1, indice, value)
           });
       });
 
-    archivoExcelMeseros.write(`./output/Meseros.xlsx`, err => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Archivo creado correctamente', new Date());
-      }
-    });
+    Excel
+      .guardarArchivo(archivoExcelMeseros)
+      .then(() => console.log('Archivo creado correctamente', new Date()))
+      .catch(console.log);
 
   },
 

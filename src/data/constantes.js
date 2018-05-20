@@ -7,20 +7,7 @@ const Utils = require('./../utils');
 
 module.exports = {
 
-  MESES: [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre',
-  ],
+  CARPETA_SALIDA: '/Users/diegofrayo/Documents/Carpeta-Compartida/Fuentes',
 
   YEARS: [2017, 2018],
 
@@ -70,7 +57,7 @@ module.exports = {
 
   COLUMNAS_MESEROS: ['CODIGO', 'CEDULA', 'NOMBRE', 'DIRECCION', 'TELEFONO'],
 
-  COLUMNAS_FECHAS: ['FECHA', 'DIA', 'SEMANA', 'MES', 'AÑO'],
+  COLUMNAS_FECHAS: ['FECHA', 'DIA', 'MES', 'AÑO', 'NOMBRE MES', 'NOMBRE DIA'],
 
   COLUMNAS_TIEMPO: ['TIEMPO', 'HORA', 'MINUTOS', 'FRANJA HORARIA'],
 

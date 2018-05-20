@@ -2,7 +2,6 @@ const { argv } = require('yargs');
 
 const ClientesScript = require('./scripts/clientes');
 const FechasScript = require('./scripts/fechas');
-const GastosScript = require('./scripts/gastos');
 const MeserosScript = require('./scripts/meseros');
 const PlatosScript = require('./scripts/platos');
 const TiempoScript = require('./scripts/tiempo');
@@ -34,10 +33,6 @@ switch (argv.area) {
 
   case 'meseros':
     MeserosScript.ejecutar();
-    break;
-
-  case 'gastos':
-    GastosScript.ejecutar();
     break;
 
   case 'all':

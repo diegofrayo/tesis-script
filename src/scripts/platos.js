@@ -1,5 +1,4 @@
-const xl = require('excel4node'); // docs: https://www.npmjs.com/package/excel4node
-
+const Excel = require('./../excel');
 const Constantes = require('./../data/constantes');
 
 module.exports = {
@@ -8,14 +7,12 @@ module.exports = {
 
     console.log('Creando archivo con el listado de platos...', new Date());
 
-    const archivoExcelPlatos = new xl.Workbook();
-    const hojaDeExcelPlatos = archivoExcelPlatos.addWorksheet('Platos');
+    const archivoExcelPlatos = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/Platos.xls`);
+    const hojaDeExcelPlatos = Excel.agregarHoja(archivoExcelPlatos, 'Platos');
 
     Object
       .values(Constantes.COLUMNAS_PLATOS)
-      .forEach((value, indice) => {
-        hojaDeExcelPlatos.cell(1, indice + 1).string(value);
-      });
+      .forEach((value, indice) => Excel.escribirCelda(hojaDeExcelPlatos, 0, indice, value));
 
     Constantes
       .PLATOS
@@ -24,17 +21,14 @@ module.exports = {
           .values(plato)
           .forEach((value, indice) => {
             if (typeof value === 'object') return;
-            hojaDeExcelPlatos.cell(platoIndice + 2, indice + 1)[typeof value](value);
+            Excel.escribirCelda(hojaDeExcelPlatos, platoIndice + 1, indice, value)
           });
       });
 
-    archivoExcelPlatos.write(`./output/Platos.xlsx`, err => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Archivo creado correctamente', new Date());
-      }
-    });
+    Excel
+      .guardarArchivo(archivoExcelPlatos)
+      .then(() => console.log('Archivo creado correctamente', new Date()))
+      .catch(console.log);
 
   },
 

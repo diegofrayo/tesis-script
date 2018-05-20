@@ -115,7 +115,7 @@ module.exports = {
     return dia === 6 || dia === 0;
   },
 
-  formatearFecha: fecha => `${fecha.getDate()}-${fecha.getMonth() + 1}-${fecha.getFullYear()}`,
+  formatearFecha: fecha => `${fecha.getFullYear()}-${formatearNumero(fecha.getMonth() + 1)}-${formatearNumero(fecha.getDate())}`,
 
   crearFecha: (year, dia) => {
     const fecha = new Date(year, 0);
