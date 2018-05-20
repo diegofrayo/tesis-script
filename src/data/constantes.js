@@ -1,7 +1,9 @@
 const Clientes = require('./clientes');
 const Fechas = require('./fechas');
+const Gastos = require('./gastos');
 const Meseros = require('./meseros');
 const Platos = require('./platos');
+const Proveedores = require('./proveedores');
 const Tiempo = require('./tiempo');
 const Utils = require('./../utils');
 
@@ -63,6 +65,10 @@ module.exports = {
 
   COLUMNAS_PLATOS: ['CODIGO', 'NOMBRE', 'CATEGORIA'],
 
+  COLUMNAS_GASTOS_DIM: ['CODIGO', 'NOMBRE', 'CATEGORIA'],
+
+  COLUMNAS_PROVEEDORES: ['CODIGO', 'NOMBRE', 'DIRECCION', 'TELEFONO'],
+
   PLATOS: Platos.generar(),
 
   FECHAS: Fechas.generar(),
@@ -72,5 +78,9 @@ module.exports = {
   MESEROS: Meseros.generar(),
 
   CLIENTES: Clientes.generar(),
+
+  GASTOS: Gastos.generar(),
+
+  PROVEEDORES: Proveedores.generar(),
 
 };

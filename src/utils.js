@@ -26,23 +26,41 @@ const obtenerPlatoAdicional = platos => {
 const obtenerPlatoFuerte = (platos, franjaHoraria) => {
 
   let platosFuertes;
+  let numeroAleatorio = crearNumeroAleatorio(0, 100);
 
   if (franjaHoraria === 'NOCHE') {
-
-    const numeroAleatorio = Math.round(Math.random() * 100);
 
     if (numeroAleatorio <= 70) {
       platosFuertes = platos.filter(item => item.categoria === 'Ceviches');
     } else {
       platosFuertes = platos.filter(
-        item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas' && item.categoria !== 'Ejecutivo',
+        item =>
+          item.categoria !== 'Adicionales' &&
+          item.categoria !== 'Bebidas' &&
+          item.categoria !== 'Ejecutivo',
       );
     }
 
   } else {
-    platosFuertes = platos.filter(
-      item => item.categoria !== 'Adicionales' && item.categoria !== 'Bebidas',
-    );
+
+    numeroAleatorio = crearNumeroAleatorio(0, 100);
+
+    if (numeroAleatorio <= 90) {
+      platosFuertes = platos.filter(
+        item =>
+          item.categoria === 'Ejecutivo' ||
+          item.nombre === 'Cazuela de mariscos' ||
+          item.nombre === 'Arroz a la marinera',
+      );
+    } else {
+      platosFuertes = platos.filter(
+        item =>
+          item.categoria !== 'Adicionales' &&
+          item.categoria !== 'Bebidas' &&
+          item.categoria !== 'Ejecutivo',
+      );
+    }
+
   }
 
   return obtenerItemAleatoriamente(platosFuertes);

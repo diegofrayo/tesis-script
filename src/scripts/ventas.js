@@ -58,7 +58,7 @@ module.exports = {
       return Excel
         .guardarArchivo(archivoExcel)
         .then(() => {
-          console.log(`Archivo ${numeroArchivosExcel} creado correctamente | ${new Date()}`);
+          console.log(`Archivo ${numeroArchivosExcel} creado correctamente. Numero de filas (${hojaDeExcelActualFila - 1}) | ${new Date()}`);
           configurarArchivoExcel();
           return true;
         });

@@ -242,9 +242,75 @@ const platos = [
   // -------------- Ejecutivos --------------
   {
     id: 'id',
-    nombre: 'Ejecutivo con ',
+    nombre: 'Ejecutivo con sierra',
     categoria: 'Ejecutivo',
-    precio: { 2017: 10000, 2018: 10000 },
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con mojarra',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con bocachico',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con trucha',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con chuleta',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con pargo rojo',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con bagre basa',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con capaz',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con arroz marinero',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con arroz con camarón',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con spaghettis con camarón',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
+  },
+  {
+    id: 'id',
+    nombre: 'Ejecutivo con spaghettis a la marinera',
+    categoria: 'Ejecutivo',
+    precio: { 2017: 10000, 2018: 12000 },
   },
 
   // -------------- Adicionales --------------
@@ -272,7 +338,6 @@ const platos = [
     categoria: 'Adicionales',
     precio: { 2017: 5000, 2018: 5000 },
   },
-
 
   // -------------- Bebidas --------------
   {
