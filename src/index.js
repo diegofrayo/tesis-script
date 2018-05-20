@@ -3,6 +3,7 @@ const { argv } = require('yargs');
 const ClientesScript = require('./scripts/clientes');
 const FechasScript = require('./scripts/fechas');
 const GastosDimensionScript = require('./scripts/gastos-dimension');
+const GastosScript = require('./scripts/gastos');
 const MeserosScript = require('./scripts/meseros');
 const PlatosScript = require('./scripts/platos');
 const ProveedoresScript = require('./scripts/proveedores');
@@ -53,6 +54,10 @@ switch (argv.area) {
     ClientesScript.ejecutar();
     PlatosScript.ejecutar();
     VentasScript.ejecutar('domicilios');
+    break;
+
+  case 'gastos':
+    GastosScript.ejecutar();
     break;
 
   default:

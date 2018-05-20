@@ -517,6 +517,88 @@ module.exports = {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   },
 
+  obtenerComprasPescado: (gastos, dia) => {
+
+    const gastosPescado = gastos.filter(gasto => gasto.categoria === 'PESCADO');
+
+    if (dia % 2 === 0) {
+      return gastosPescado.slice(0, Math.floor(gastosPescado.length / 2));
+    }
+
+    return gastosPescado.slice(Math.round(gastosPescado.length / 2), gastosPescado.length - 1);
+  },
+
+  obtenerComprasInsumos: (gastos, dia) => {
+
+    if (dia === 0) return [];
+
+    return gastos.filter(gasto => gasto.categoria === 'INSUMOS');
+  },
+
+  obtenerComprasBebidas: (gastos, dia) => {
+
+    if (dia !== 1) return [];
+
+    return gastos.filter(gasto => gasto.categoria === 'BEBIDAS');
+  },
+
+  obtenerGastosNomina: (gastos, fecha) => {
+
+    const fechaUltimoDiaMes = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+
+    if (fechaUltimoDiaMes.getDate() !== fecha.getDate()) return [];
+
+    return gastos.filter(gasto => gasto.categoria === 'NOMINA');
+  },
+
+  obtenerGastosInfraestructura: (gastos, fecha) => {
+
+    const fechaUltimoDiaMes = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+
+    if (fechaUltimoDiaMes.getDate() !== fecha.getDate()) return [];
+
+    return gastos.filter(gasto => gasto.categoria === 'INFRAESTRUCTURA');
+  },
+
+  obtenerComprasBebidas: (gastos, fecha) => {
+
+    if (fecha.getDay() !== 1) return [];
+
+    return gastos.filter(gasto => gasto.categoria === 'BEBIDAS');
+  },
+
+  obtenerGastosPublicidad: (gastos, fecha) => {
+
+    const fechaUltimoDiaMes = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+
+    if (fechaUltimoDiaMes.getDate() !== fecha.getDate()) return [];
+
+    return gastos.filter(gasto => gasto.categoria === 'PUBLICIDAD');
+  },
+
+  obtenerProveedor: (proveedores, categoriaGasto, fecha) => {
+
+    if (categoriaGasto === 'PESCADO') {
+
+      if (fecha.getFullYear() === 2017 && (fecha.getMonth() + 1) <= 10) {
+        return proveedores.filter(proveedor => proveedor.categoria === 'PESCADERIA')[0];
+      }
+
+      return proveedores.filter(proveedor => proveedor.categoria === 'PESCADERIA')[1];
+
+    } else if (categoriaGasto === 'INSUMOS') {
+
+      if ((fecha.getMonth() + 1) % 2 === 0) {
+        return proveedores.filter(proveedor => proveedor.categoria === 'INSUMOS')[0];
+      }
+
+      return proveedores.filter(proveedor => proveedor.categoria === 'INSUMOS')[1];
+
+    }
+
+    return proveedores.filter(proveedor => proveedor.categoria === 'N/A')[0];
+  },
+
   /* eslint-disable */
   batchPromises: (batchSize, array, getWholeArray, callback) => {
     batchSize = batchSize > array.length ? array.length : batchSize;
@@ -533,4 +615,5 @@ module.exports = {
       .reduce((chain, work) => chain.then(work), Promise.resolve([]));
   },
   /* eslint-enable */
+
 };
