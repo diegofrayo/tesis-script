@@ -24,13 +24,14 @@ const fechas = [2017, 2018, 2019, 2020]
       .map(dia => {
         const fecha = Utils.crearFecha(year, dia);
         const mes = fecha.getMonth();
+        const diaSemana = fecha.getDay();
         return {
           fecha: Utils.formatearFecha(fecha),
           dia: fecha.getDate(),
           mes: mes + 1,
           year: fecha.getFullYear(),
-          nombre_mes: MESES[mes],
-          nombre_dia: DIAS[fecha.getDay()],
+          nombre_mes: `(${Utils.formatearNumero(mes + 1)}) ${MESES[mes]}`,
+          nombre_dia: `(${Utils.formatearNumero(diaSemana === 0 ? 7 : diaSemana)}) ${DIAS[diaSemana]}`,
         };
       });
   });

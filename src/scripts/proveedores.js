@@ -20,6 +20,7 @@ module.exports = {
         Object
           .values(proveedor)
           .forEach((value, indice) => {
+            if (indice > 3) return;
             Excel.escribirCelda(hojaDeExcelProveedores, proveedorIndice + 1, indice, value)
           });
       });

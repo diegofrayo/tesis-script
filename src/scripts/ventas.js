@@ -12,16 +12,16 @@ module.exports = {
 
     if (configuracionScript === 'domicilios') {
       configuracion = {
-        rangoNumerosDeOrdenNormal: [15, 20],
-        rangoNumerosDeOrdenFinDeSemana: [40, 50],
+        rangoNumerosDeOrdenNormal: [10, 15],
+        rangoNumerosDeOrdenFinDeSemana: [20, 30],
         esDomicilios: true,
         directorioArchivos: 'Ventas A Domicilio',
         columnas: Constantes.COLUMNAS_VENTAS_DOMICILIOS,
       };
     } else {
       configuracion = {
-        rangoNumerosDeOrdenNormal: [50, 70],
-        rangoNumerosDeOrdenFinDeSemana: [200, 250],
+        rangoNumerosDeOrdenNormal: [30, 50],
+        rangoNumerosDeOrdenFinDeSemana: [150, 170],
         esDomicilios: false,
         directorioArchivos: 'Ventas En Restaurante',
         columnas: Constantes.COLUMNAS_VENTAS_RESTAURANTE,

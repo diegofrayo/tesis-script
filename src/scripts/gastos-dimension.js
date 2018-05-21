@@ -20,6 +20,7 @@ module.exports = {
         Object
           .values(gasto)
           .forEach((value, indice) => {
+            if (indice > 2) return;
             Excel.escribirCelda(hojaDeExcelGastos, gastoIndice + 1, indice, value)
           });
       });

@@ -48,8 +48,8 @@ module.exports = {
   COLUMNAS_GASTOS: [
     'FECHA',
     'CODIGO GASTO',
-    'GASTO',
-    'CATEGORIA',
+    'NOMBRE GASTO',
+    'CATEGORIA GASTO',
     'NUMERO UNIDADES',
     'TIPO UNIDAD',
     'MONTO TOTAL',

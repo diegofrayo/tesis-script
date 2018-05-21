@@ -35,7 +35,7 @@ const gastos = [
     tipo_unidad: 'BOLSA',
   },
 
-  // Alimentos
+  // Insumos
   {
     id: 'id',
     nombre: 'Aceite',
