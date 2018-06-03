@@ -12,7 +12,7 @@ module.exports = {
     const archivoExcelMeseros = Excel.crearArchivo(`${Constantes.CARPETA_SALIDA}/Meseros.xls`);
     const hojaDeExcelMeseros = Excel.agregarHoja(archivoExcelMeseros, 'Meseros');
 
-    fs.writeFile(`${Constantes.CARPETA_SALIDA}/Meseros.json`, JSON.stringify(Constantes.MESEROS), () => {});
+    // fs.writeFile(`${Constantes.CARPETA_SALIDA}/Meseros.json`, JSON.stringify(Constantes.MESEROS), () => {});
 
     Object
       .values(Constantes.COLUMNAS_MESEROS)

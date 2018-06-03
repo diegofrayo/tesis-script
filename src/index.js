@@ -40,7 +40,7 @@ switch (argv.area) {
     TiempoScript.ejecutar();
     break;
 
-  case 'all':
+  case 'dimensiones':
     ClientesScript.ejecutar();
     MeserosScript.ejecutar();
     FechasScript.ejecutar();

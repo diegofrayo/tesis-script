@@ -25,13 +25,15 @@ const fechas = [2017, 2018, 2019, 2020]
         const fecha = Utils.crearFecha(year, dia);
         const mes = fecha.getMonth();
         const diaSemana = fecha.getDay();
+        const diaAnio = fecha.getDate();
         return {
           fecha: Utils.formatearFecha(fecha),
-          dia: fecha.getDate(),
+          dia: diaAnio,
           mes: mes + 1,
           year: fecha.getFullYear(),
           nombre_mes: `(${Utils.formatearNumero(mes + 1)}) ${MESES[mes]}`,
-          nombre_dia: `(${Utils.formatearNumero(diaSemana === 0 ? 7 : diaSemana)}) ${DIAS[diaSemana]}`,
+          nombre_dia: `(${Utils.formatearNumero(diaAnio)}) ${DIAS[diaSemana]}`,
+          es_fin_de_semana: Utils.esFinDeSemana(fecha) ? 1 : 0,
         };
       });
   });

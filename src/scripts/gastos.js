@@ -47,7 +47,7 @@ module.exports = {
       .YEARS
       .map(year => {
         return Utils
-          .crearArreglo(year === new Date().getFullYear() ? 119 : 365)
+          .crearArreglo(year === new Date().getFullYear() ? 120 : 365)
           .map(indice => Utils.crearFecha(year, indice));
       })
       .reduce((acum, curr) => {
@@ -61,10 +61,11 @@ module.exports = {
       return fecha => {
 
         let gastos = [];
+        const diaSemana = fecha.getDay();
 
         const gastosPescado = Utils
-          .obtenerComprasPescado(Constantes.GASTOS, fecha.getDay())
-          .map((gasto) => {
+          .obtenerComprasPescado(Constantes.GASTOS, diaSemana)
+          .map(gasto => {
             const unidades = Utils.obtenerItemAleatoriamente(gasto.rango_unidades);
             const montoTotal = Utils.obtenerItemAleatoriamente(gasto.rango_precio) * unidades;
             const proveedor = Utils.obtenerProveedor(Constantes.PROVEEDORES, gasto.categoria, fecha);
@@ -74,7 +75,6 @@ module.exports = {
               nombre_gasto: gasto.nombre,
               categoria_gasto: gasto.categoria,
               numero_unidades: unidades,
-              tipo_unidad: gasto.tipo_unidad,
               monto_total: montoTotal,
               codigo_proveedor: proveedor.id,
               nombre_proveedor: proveedor.nombre,
@@ -82,8 +82,8 @@ module.exports = {
           });
 
         const gastosInsumos = Utils
-          .obtenerComprasInsumos(Constantes.GASTOS, fecha.getDay())
-          .map((gasto) => {
+          .obtenerComprasInsumos(Constantes.GASTOS, diaSemana)
+          .map(gasto => {
             const unidades = Utils.obtenerItemAleatoriamente(gasto.rango_unidades);
             const montoTotal = Utils.obtenerItemAleatoriamente(gasto.rango_precio);
             const proveedor = Utils.obtenerProveedor(Constantes.PROVEEDORES, gasto.categoria, fecha);
@@ -93,7 +93,6 @@ module.exports = {
               nombre_gasto: gasto.nombre,
               categoria_gasto: gasto.categoria,
               numero_unidades: unidades,
-              tipo_unidad: gasto.tipo_unidad,
               monto_total: montoTotal,
               codigo_proveedor: proveedor.id,
               nombre_proveedor: proveedor.nombre,
@@ -102,7 +101,7 @@ module.exports = {
 
         const gastosNomina = Utils
           .obtenerGastosNomina(Constantes.GASTOS, fecha)
-          .map((gasto) => {
+          .map(gasto => {
             const unidades = Utils.obtenerItemAleatoriamente(gasto.rango_unidades);
             const montoTotal = Utils.obtenerItemAleatoriamente(gasto.rango_precio);
             const proveedor = Utils.obtenerProveedor(Constantes.PROVEEDORES, gasto.categoria, fecha);
@@ -112,7 +111,6 @@ module.exports = {
               nombre_gasto: gasto.nombre,
               categoria_gasto: gasto.categoria,
               numero_unidades: unidades,
-              tipo_unidad: gasto.tipo_unidad,
               monto_total: montoTotal,
               codigo_proveedor: proveedor.id,
               nombre_proveedor: proveedor.nombre,
@@ -121,7 +119,7 @@ module.exports = {
 
         const gastosInfraestructura = Utils
           .obtenerGastosInfraestructura(Constantes.GASTOS, fecha)
-          .map((gasto) => {
+          .map(gasto => {
             const unidades = Utils.obtenerItemAleatoriamente(gasto.rango_unidades);
             const montoTotal = Utils.crearNumeroAleatorio(...gasto.rango_precio);
             const proveedor = Utils.obtenerProveedor(Constantes.PROVEEDORES, gasto.categoria, fecha);
@@ -131,7 +129,6 @@ module.exports = {
               nombre_gasto: gasto.nombre,
               categoria_gasto: gasto.categoria,
               numero_unidades: unidades,
-              tipo_unidad: gasto.tipo_unidad,
               monto_total: montoTotal,
               codigo_proveedor: proveedor.id,
               nombre_proveedor: proveedor.nombre,
@@ -139,8 +136,8 @@ module.exports = {
           });
 
         const gastosBebidas = Utils
-          .obtenerComprasBebidas(Constantes.GASTOS, fecha)
-          .map((gasto) => {
+          .obtenerComprasBebidas(Constantes.GASTOS, diaSemana)
+          .map(gasto => {
             const unidades = Utils.obtenerItemAleatoriamente(gasto.rango_unidades);
             const montoTotal = Utils.obtenerItemAleatoriamente(gasto.rango_precio);
             const proveedor = Utils.obtenerProveedor(Constantes.PROVEEDORES, gasto.categoria, fecha);
@@ -150,7 +147,6 @@ module.exports = {
               nombre_gasto: gasto.nombre,
               categoria_gasto: gasto.categoria,
               numero_unidades: unidades,
-              tipo_unidad: gasto.tipo_unidad,
               monto_total: montoTotal,
               codigo_proveedor: proveedor.id,
               nombre_proveedor: proveedor.nombre,
@@ -159,7 +155,7 @@ module.exports = {
 
         const gastosPublicidad = Utils
           .obtenerGastosPublicidad(Constantes.GASTOS, fecha)
-          .map((gasto) => {
+          .map(gasto => {
             const unidades = Utils.obtenerItemAleatoriamente(gasto.rango_unidades);
             const montoTotal = Utils.obtenerItemAleatoriamente(gasto.rango_precio);
             const proveedor = Utils.obtenerProveedor(Constantes.PROVEEDORES, gasto.categoria, fecha);
@@ -169,7 +165,6 @@ module.exports = {
               nombre_gasto: gasto.nombre,
               categoria_gasto: gasto.categoria,
               numero_unidades: unidades,
-              tipo_unidad: gasto.tipo_unidad,
               monto_total: montoTotal,
               codigo_proveedor: proveedor.id,
               nombre_proveedor: proveedor.nombre,
@@ -189,9 +184,7 @@ module.exports = {
           gastos.forEach(gasto => {
             Object
               .values(gasto)
-              .forEach((value, indice) => {
-                Excel.escribirCelda(hojaDeExcel, hojaDeExcelActualFila, indice, value);
-              });
+              .forEach((value, indice) => Excel.escribirCelda(hojaDeExcel, hojaDeExcelActualFila, indice, value));
             hojaDeExcelActualFila += 1;
           });
 

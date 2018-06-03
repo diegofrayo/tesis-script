@@ -13,15 +13,15 @@ module.exports = {
     if (configuracionScript === 'domicilios') {
       configuracion = {
         rangoNumerosDeOrdenNormal: [10, 15],
-        rangoNumerosDeOrdenFinDeSemana: [20, 30],
+        rangoNumerosDeOrdenFinDeSemana: [15, 20],
         esDomicilios: true,
         directorioArchivos: 'Ventas A Domicilio',
         columnas: Constantes.COLUMNAS_VENTAS_DOMICILIOS,
       };
     } else {
       configuracion = {
-        rangoNumerosDeOrdenNormal: [30, 50],
-        rangoNumerosDeOrdenFinDeSemana: [150, 170],
+        rangoNumerosDeOrdenNormal: [20, 40],
+        rangoNumerosDeOrdenFinDeSemana: [100, 120],
         esDomicilios: false,
         directorioArchivos: 'Ventas En Restaurante',
         columnas: Constantes.COLUMNAS_VENTAS_RESTAURANTE,
@@ -68,7 +68,7 @@ module.exports = {
       .YEARS
       .map(year => {
         return Utils
-          .crearArreglo(year === new Date().getFullYear() ? 119 : 365)
+          .crearArreglo(year === new Date().getFullYear() ? 120 : 365)
           .map(indice => ({ fecha: Utils.crearFecha(year, indice), year }));
       })
       .reduce((acum, curr) => {
@@ -110,6 +110,7 @@ module.exports = {
             let persona;
 
             if (!configuracion.esDomicilios) {
+
               persona = Utils.obtenerItemAleatoriamente(Constantes.MESEROS);
               orden = {
                 fecha: Utils.formatearFecha(fecha),
@@ -117,12 +118,20 @@ module.exports = {
                 hora_factura: Utils.crearHoraFacturacion(horaTomaOrden),
                 numero_mesa: Utils.obtenerItemAleatoriamente(Constantes.MESAS),
               };
+
             } else {
-              persona = Utils.obtenerItemAleatoriamente(Constantes.CLIENTES);
+
+              if (Utils.crearNumeroAleatorio(0, 100) <= 90) {
+                persona = Constantes.CLIENTES[0];
+              } else {
+                persona = Utils.obtenerItemAleatoriamente(Constantes.CLIENTES);
+              }
+
               orden = {
                 fecha: Utils.formatearFecha(fecha),
                 hora_toma_orden: horaTomaOrden,
               };
+
             }
 
             platos = platos.map(plato => {

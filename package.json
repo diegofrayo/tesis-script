@@ -1,7 +1,7 @@
 {
   "name": "tesis-script",
   "version": "0.0.1",
-  "description": "Script que genera un archivo de excel con mas de 100k registros usando node.js",
+  "description": "Script que genera un archivos de excel con mas de 200k registros usando node.js",
   "keywords": [
     "node",
     "spreadsheet",
@@ -25,18 +25,18 @@
     "url": "git+https://github.com/diegofrayo/tesis-script.git"
   },
   "scripts": {
+    "clean": "rm -r /Users/diegofrayo/Documents/Carpeta-Compartida/Fuentes/*",
     "start": "cross-env NODE_ENV=development node src/index.js",
-    "start-clientes": "cross-env NODE_ENV=development node src/index.js --area=clientes",
-    "start-domicilios": "cross-env NODE_ENV=development node src/index.js --area=domicilios",
-    "start-fechas": "cross-env NODE_ENV=development node src/index.js --area=fechas",
-    "start-gastos": "cross-env NODE_ENV=development node src/index.js --area=gastos",
-    "start-gastos-dim": "cross-env NODE_ENV=development node src/index.js --area=gastos-dim",
-    "start-meseros": "cross-env NODE_ENV=development node src/index.js --area=meseros",
-    "start-platos": "cross-env NODE_ENV=development node src/index.js --area=platos",
-    "start-proveedores": "cross-env NODE_ENV=development node src/index.js --area=proveedores",
-    "start-restaurante": "cross-env NODE_ENV=development node src/index.js --area=restaurante",
-    "start-tiempo": "cross-env NODE_ENV=development node src/index.js --area=tiempo",
-    "start-all": "cross-env NODE_ENV=development node src/index.js --area=all",
+    "generar-dimensiones": "cross-env NODE_ENV=development node src/index.js --area=dimensiones",
+    "generar-clientes": "cross-env NODE_ENV=development node src/index.js --area=clientes",
+    "generar-domicilios": "cross-env NODE_ENV=development node src/index.js --area=domicilios",
+    "generar-fechas": "cross-env NODE_ENV=development node src/index.js --area=fechas",
+    "generar-gastos": "cross-env NODE_ENV=development node src/index.js --area=gastos",
+    "generar-gastos-dim": "cross-env NODE_ENV=development node src/index.js --area=gastos-dim",
+    "generar-meseros": "cross-env NODE_ENV=development node src/index.js --area=meseros",
+    "generar-platos": "cross-env NODE_ENV=development node src/index.js --area=platos",
+    "generar-proveedores": "cross-env NODE_ENV=development node src/index.js --area=proveedores",
+    "generar-tiempo": "cross-env NODE_ENV=development node src/index.js --area=tiempo",
     "lint": "esw -w -c .eslintrc src/**/*.js"
   },
   "devDependencies": {

@@ -9,12 +9,42 @@ const crearNumeroAleatorio = (minimo, maximo) => {
   return numeroAleatorio + minimo;
 };
 
+const eliminarItems = (arreglo, numeroItems) => {
+
+  for (let i = 0; i < numeroItems; i++) {
+    arreglo.splice(crearNumeroAleatorio(0, arreglo.length - 1), 1);
+  }
+
+  return arreglo;
+};
+
 const formatearNumero = numero => (numero < 10 ? `0${numero}` : numero);
 
 const crearArreglo = longitud => Array.from(Array(longitud).keys()).map(value => value + 1);
 
-const obtenerBebida = platos => {
-  const bebidas = platos.filter(item => item.categoria === 'Bebidas');
+const obtenerBebida = (platos, esDomicilios) => {
+
+  const numeroAleatorio = crearNumeroAleatorio(0, 100);
+  let bebidas = platos.filter(item => item.categoria === 'Bebidas');
+
+  if (esDomicilios) {
+    if (numeroAleatorio <= 70) {
+      bebidas = bebidas.filter(bebida => bebida.nombre === 'Limonada de coco');
+    } else {
+      bebidas = bebidas.filter(bebida => bebida.nombre !== 'Limonada de coco');
+    }
+  } else {
+    if (numeroAleatorio <= 70) {
+      bebidas = bebidas.filter(
+        bebida => bebida.nombre === 'Cerveza Club Colombia' || bebida.nombre === 'Jugos hit',
+      );
+    } else {
+      bebidas = bebidas.filter(
+        bebida => bebida.nombre !== 'Cerveza Club Colombia' && bebida.nombre !== 'Jugos hit',
+      );
+    }
+  }
+
   return obtenerItemAleatoriamente(bebidas);
 };
 
@@ -23,13 +53,12 @@ const obtenerPlatoAdicional = platos => {
   return obtenerItemAleatoriamente(platosAdicionales);
 };
 
-const obtenerPlatoFuerte = (platos, franjaHoraria) => {
+const obtenerPlatoFuerte = (platos, franjaHoraria, esDomicilios) => {
 
   let platosFuertes;
   let numeroAleatorio = crearNumeroAleatorio(0, 100);
 
   if (franjaHoraria === 'NOCHE') {
-
     if (numeroAleatorio <= 70) {
       platosFuertes = platos.filter(item => item.categoria === 'Ceviches');
     } else {
@@ -37,30 +66,62 @@ const obtenerPlatoFuerte = (platos, franjaHoraria) => {
         item =>
           item.categoria !== 'Adicionales' &&
           item.categoria !== 'Bebidas' &&
-          item.categoria !== 'Ejecutivo',
+          item.categoria !== 'Ejecutivos',
       );
     }
-
   } else {
 
     numeroAleatorio = crearNumeroAleatorio(0, 100);
 
-    if (numeroAleatorio <= 90) {
-      platosFuertes = platos.filter(
-        item =>
-          item.categoria === 'Ejecutivo' ||
-          item.nombre === 'Cazuela de mariscos' ||
-          item.nombre === 'Arroz a la marinera',
-      );
+    if (numeroAleatorio <= 70) {
+
+      numeroAleatorio = crearNumeroAleatorio(0, 100);
+
+      if (numeroAleatorio <= 85) {
+
+        platosFuertes = platos.filter(item => item.categoria === 'Ejecutivos');
+        numeroAleatorio = crearNumeroAleatorio(0, 100);
+
+        if (esDomicilios) {
+          if (numeroAleatorio <= 30) {
+            platosFuertes = platos.filter(
+              item =>
+                item.nombre === 'Ejecutivo con mojarra' ||
+                item.nombre === 'Ejecutivo con arroz marinero' ||
+                item.nombre === 'Ejecutivo con arroz con camarón',
+            );
+          } else {
+            platosFuertes = platos.filter(
+              item =>
+                item.nombre !== 'Ejecutivo con mojarra' &&
+                item.nombre !== 'Ejecutivo con arroz marinero' &&
+                item.nombre !== 'Ejecutivo con arroz con camarón',
+            );
+          }
+        } else {
+          if (numeroAleatorio >= 85) {
+            platosFuertes = platosFuertes.slice(0, 3);
+          } else {
+            platosFuertes = platosFuertes.slice(3, platosFuertes.length - 1);
+          }
+        }
+
+      } else {
+        platosFuertes = platos.filter(
+          item => item.nombre === 'Cazuela de mariscos' || item.nombre === 'Arroz a la marinera',
+        );
+      }
+
     } else {
       platosFuertes = platos.filter(
         item =>
           item.categoria !== 'Adicionales' &&
           item.categoria !== 'Bebidas' &&
-          item.categoria !== 'Ejecutivo',
+          item.categoria !== 'Ejecutivos' &&
+          item.nombre !== 'Cazuela de mariscos' &&
+          item.nombre !== 'Arroz a la marinera',
       );
     }
-
   }
 
   return obtenerItemAleatoriamente(platosFuertes);
@@ -175,20 +236,20 @@ module.exports = {
     crearArreglo(numeroDePersonas)
       .map(() => {
 
-        const platoFuerte = obtenerPlatoFuerte(platos, franjaHoraria);
+        const platoFuerte = obtenerPlatoFuerte(platos, franjaHoraria, esDomicilios);
         agregarPlatoAOrden(listadoPlatos, platoFuerte, currentYear);
 
-        if (esDomicilios === false) {
-          const bebida = obtenerBebida(platos);
+        if (esDomicilios === false && platoFuerte.categoria !== 'Ejecutivos' && platoFuerte.categoria !== 'Ceviches') {
+          const bebida = obtenerBebida(platos, esDomicilios);
           agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
         }
       });
 
-    const platoAdicional = crearNumeroAleatorio(0, 1) === 1 ? obtenerPlatoAdicional(platos) : undefined;
+    const platoAdicional = crearNumeroAleatorio(0, 100) >= 85 ? obtenerPlatoAdicional(platos) : undefined;
     agregarPlatoAOrden(listadoPlatos, platoAdicional, currentYear);
 
-    if (esDomicilios === true && crearNumeroAleatorio(0, 1) === 1) {
-      const bebida = obtenerBebida(platos);
+    if (esDomicilios === true && crearNumeroAleatorio(0, 100) >= 85) {
+      const bebida = obtenerBebida(platos, esDomicilios);
       agregarPlatoAOrden(listadoPlatos, bebida, currentYear);
     }
 
@@ -281,8 +342,8 @@ module.exports = {
       case 'PAREJA':
         return 2;
       default:
-        if (franjaHoraria === 'NOCHE') return crearNumeroAleatorio(2, 4);
-        return crearNumeroAleatorio(2, 10);
+        if (franjaHoraria === 'NOCHE') return crearNumeroAleatorio(1, 3);
+        return crearNumeroAleatorio(3, 6);
     }
   },
 
@@ -326,10 +387,6 @@ module.exports = {
     };
 
     return sortFn;
-  },
-
-  crearNombreEmpresa: () => {
-    return `Empresa ${crearCadenaAleatoria(3)}`;
   },
 
   crearTelefono: tipoCliente => {
@@ -400,36 +457,39 @@ module.exports = {
   crearPersona: () => {
 
     const NOMBRES_SINGULARES = [
+      'Adrián',
       'Alberto',
+      'Alejandro',
       'Alexis',
       'Andres',
       'Carlos',
-      'Diego',
+      'Daniel',
+      'David',
       'Eduardo',
       'Enrique',
       'Esteban',
       'Fernando',
-      'Jairo',
+      'Hugo',
+      'Javier',
       'Jorge',
       'Juan',
       'Julian',
+      'Lucas',
+      'Manuel',
+      'Marcos',
       'Mario',
+      'Martin',
       'Mauricio',
       'Orlando',
       'Pablo',
-      'Ricardo',
       'Roberto',
-      'Sebastian',
     ];
 
     const NOMBRES_COMPUESTOS = [
       'Andres Esteban',
       'Andres Fernando',
-      'Diego Fernando',
       'Eduardo Luis',
       'Ignacio Andres',
-      'Jaime Daniel',
-      'Jhon Jairo',
       'Jorge Esteban',
       'Juan Alberto',
       'Juan Alfonso',
@@ -441,8 +501,6 @@ module.exports = {
       'Luis Esteban',
       'Luis Fernando',
       'Mauricio Andres',
-      'Ricardo Augusto',
-      'Roberto Antonio',
     ];
 
     const NOMBRES_MUJERES = [
@@ -473,22 +531,31 @@ module.exports = {
       'Alvarez',
       'Aristizabal',
       'Cano',
+      'Cardona',
+      'Castro',
+      'Diaz',
       'Florez',
+      'García',
       'Gomez',
+      'González',
       'Gutierrez',
       'Henriquez',
-      'Hincapie',
+      'Hernández',
       'Jimenez',
-      'Lamprea',
-      'Lopera',
       'Lopez',
+      'Martínez',
+      'Medina',
       'Mora',
-      'Noriega',
-      'Rayo',
+      'Moreno',
+      'Prieto',
+      'Pérez',
+      'Ramírez',
+      'Restrepo',
       'Rodriguez',
-      'Tabares',
+      'Rojas',
+      'Sabogal',
+      'Sánchez',
       'Torres',
-      'Zamora',
     ];
 
     const numeroAleatorio = crearNumeroAleatorio(0, 2);
@@ -519,27 +586,27 @@ module.exports = {
 
   obtenerComprasPescado: (gastos, dia) => {
 
-    const gastosPescado = gastos.filter(gasto => gasto.categoria === 'PESCADO');
+    const gastosPescado = gastos.filter(gasto => gasto.categoria === 'PESCADOS');
 
     if (dia % 2 === 0) {
-      return gastosPescado.slice(0, Math.floor(gastosPescado.length / 2));
+      return eliminarItems(gastosPescado.slice(0, Math.floor(gastosPescado.length / 2)), 1);
     }
 
-    return gastosPescado.slice(Math.round(gastosPescado.length / 2), gastosPescado.length - 1);
+    return eliminarItems(gastosPescado.slice(Math.floor(gastosPescado.length / 2), gastosPescado.length), 1);
   },
 
   obtenerComprasInsumos: (gastos, dia) => {
 
     if (dia === 0) return [];
 
-    return gastos.filter(gasto => gasto.categoria === 'INSUMOS');
+    return eliminarItems(gastos.filter(gasto => gasto.categoria === 'INSUMOS'), 3);
   },
 
   obtenerComprasBebidas: (gastos, dia) => {
 
     if (dia !== 1) return [];
 
-    return gastos.filter(gasto => gasto.categoria === 'BEBIDAS');
+    return eliminarItems(gastos.filter(gasto => gasto.categoria === 'BEBIDAS'), 2);
   },
 
   obtenerGastosNomina: (gastos, fecha) => {
@@ -560,13 +627,6 @@ module.exports = {
     return gastos.filter(gasto => gasto.categoria === 'INFRAESTRUCTURA');
   },
 
-  obtenerComprasBebidas: (gastos, fecha) => {
-
-    if (fecha.getDay() !== 1) return [];
-
-    return gastos.filter(gasto => gasto.categoria === 'BEBIDAS');
-  },
-
   obtenerGastosPublicidad: (gastos, fecha) => {
 
     const fechaUltimoDiaMes = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
@@ -578,7 +638,7 @@ module.exports = {
 
   obtenerProveedor: (proveedores, categoriaGasto, fecha) => {
 
-    if (categoriaGasto === 'PESCADO') {
+    if (categoriaGasto === 'PESCADOS') {
 
       if (fecha.getFullYear() === 2017 && (fecha.getMonth() + 1) <= 10) {
         return proveedores.filter(proveedor => proveedor.categoria === 'PESCADERIA')[0];
@@ -588,7 +648,7 @@ module.exports = {
 
     } else if (categoriaGasto === 'INSUMOS') {
 
-      if ((fecha.getMonth() + 1) % 2 === 0) {
+      if ((fecha.getMonth() + 1) <= 2 || fecha.getFullYear() === 2017) {
         return proveedores.filter(proveedor => proveedor.categoria === 'INSUMOS')[0];
       }
 
